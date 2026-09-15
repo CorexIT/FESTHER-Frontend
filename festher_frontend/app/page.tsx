@@ -1,69 +1,45 @@
-import Image from "next/image";
+"use client";
+
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+
+const HouseScene = dynamic(() => import("./components/HouseScene"), {
+  ssr: false,
+  loading: () => <div className="scene-loader">Building your view…</div>,
+});
+
+const reveal = {
+  hidden: { opacity: 0, y: 26 },
+  visible: (delay = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] as const } }),
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="site-shell">
+      <nav className="navbar" aria-label="Main navigation">
+        <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} href="#" className="brand">FESTHER<span>.</span></motion.a>
+        <div className="nav-links"><a href="#projects">Projects</a><a href="#studio">Studio</a><a href="#contact">Contact</a></div>
+        <a href="#contact" className="nav-cta">Start a project <span>↗</span></a>
+      </nav>
+      <section className="hero">
+        <div className="hero-copy">
+          <motion.p custom={0.1} variants={reveal} initial="hidden" animate="visible" className="eyebrow">Architecture · Interior · Living</motion.p>
+          <motion.h1 custom={0.2} variants={reveal} initial="hidden" animate="visible">Spaces shaped<br />for <em>living.</em></motion.h1>
+          <motion.p custom={0.35} variants={reveal} initial="hidden" animate="visible" className="intro">We design considered homes where bold architecture and quiet comfort exist in perfect balance.</motion.p>
+          <motion.div custom={0.48} variants={reveal} initial="hidden" animate="visible" className="actions">
+            <a href="#projects" className="primary-button">Explore our work <span>→</span></a><a href="#studio" className="text-button">Meet the studio</a>
+          </motion.div>
+          <motion.div custom={0.6} variants={reveal} initial="hidden" animate="visible" className="meta-row">
+            <div><strong>28</strong><span>Spaces completed</span></div><div><strong>12</strong><span>Design awards</span></div>
+          </motion.div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.1, delay: 0.15 }} className="scene-wrap">
+          <HouseScene />
+          <div className="scene-label"><span>01</span><p>Courtyard House<br /><small>Colombo · 2026</small></p></div>
+          <div className="drag-note">Move cursor to explore</div>
+        </motion.div>
+      </section>
+      <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.2, delay: 0.5 }} className="bottom-rule" />
+    </main>
   );
 }
