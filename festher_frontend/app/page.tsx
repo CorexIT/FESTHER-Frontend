@@ -2,6 +2,10 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Navbar from "./components/Navbar";
+import PressSection from "./components/PressSection";
+import AccommodationSection from "./components/AccommodationSection";
+import DiningTaste from "./components/DiningTaste";
 
 const slides = ["/festher-hero.jpg", "/festher-sunset-view.jpg"];
 const experiences = [
@@ -17,18 +21,6 @@ const Fade = ({ children, className = "" }: { children: ReactNode; className?: s
   </motion.div>
 );
 
-function Nav() {
-  return (
-    <nav className="editorial-nav">
-      <a className="editorial-brand" href="/"><strong>FESTHER</strong><span>Every Moment, A Celebration</span></a>
-      <div className="editorial-links">
-        <a href="#stay">Stay</a><a href="#dine">Dine</a><a href="#experiences">Experiences</a><a href="#offers">Offers</a><a href="/gallery">Gallery</a><a href="/about">Our Story</a>
-      </div>
-      <a className="book-link" href="#booking">Book your stay <span>↗</span></a>
-    </nav>
-  );
-}
-
 export default function Home() {
   const [slide, setSlide] = useState(0);
   useEffect(() => { const timer = setInterval(() => setSlide(v => (v + 1) % slides.length), 6500); return () => clearInterval(timer); }, []);
@@ -38,7 +30,7 @@ export default function Home() {
   return <main className="festher-editorial">
     <section className="editorial-hero">
       <div className="editorial-slides"><AnimatePresence mode="sync">{slides.map((src, i) => i === slide && <motion.div key={src} className="editorial-slide" style={{ backgroundImage: `url(${src})` }} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1.09 }} exit={{ opacity: 0 }} transition={{ opacity: { duration: 1.2 }, scale: { duration: 7 } }} />)}</AnimatePresence></div>
-      <Nav />
+      <Navbar />
       <div className="hero-editorial-copy">
         <p className="gold-label">A Sri Lankan hospitality experience</p>
         <h1>Stay awhile.<br/><em>Celebrate everything.</em></h1>
@@ -46,6 +38,10 @@ export default function Home() {
       </div>
       <div className="editorial-pager"><button onClick={previous}>←</button><span>0{slide + 1}</span><i/><span>0{slides.length}</span><button onClick={next}>→</button></div>
     </section>
+
+    <AccommodationSection />
+
+    <DiningTaste />
 
     <section className="intro-editorial" id="story">
       <Fade className="intro-number"><span>01</span><i/></Fade>
@@ -80,6 +76,6 @@ export default function Home() {
 
     <section className="booking-editorial" id="booking"><div className="booking-overlay"/><Fade><p className="gold-label">Your time at FESTHER</p><h2>There is always<br/><em>something to celebrate.</em></h2><p>Plan your stay, dining experience or next memorable occasion with FESTHER.</p><a href="#contact">Start planning <span>↗</span></a></Fade></section>
 
-    <footer className="editorial-footer" id="contact"><div className="footer-mark"><strong>FESTHER</strong><p>Every Moment, A Celebration</p></div><div className="footer-col"><small>Explore</small><a href="#stay">Hotel & Villa</a><a href="#dine">Restaurant</a><a href="#experiences">Experiences</a><a href="#offers">Offers</a></div><div className="footer-col"><small>Discover</small><a href="/gallery">Gallery</a><a href="/about">Our Story</a><a href="#booking">Book your stay</a></div><div className="footer-col"><small>FESTHER</small><p>Sri Lanka</p><p>Reservations & enquiries</p></div><div className="footer-line"><span>© 2026 FESTHER</span><span>STAY · DINE · CELEBRATE · EXPERIENCE</span></div></footer>
+    <PressSection />
   </main>;
 }

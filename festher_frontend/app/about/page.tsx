@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
 
 const values=[
  {n:"01",title:"Thoughtful Stays",text:"Spaces shaped around comfort, calm and the small details that turn a visit into a memory."},
@@ -9,7 +10,7 @@ const values=[
 ];
 
 export default function AboutPage(){return <main className="about-page">
- <header className="inner-nav"><a href="/" className="brand"><span className="brand-name">FESTHER</span><span className="brand-tagline">Every Moment, A Celebration</span></a><nav className="nav-links"><a href="/">Home</a><a href="/#services">Services</a><a href="/#packages">Packages & Offers</a><a href="/#hotel">Hotel & Villa</a><a href="/#restaurant">Restaurant</a><a href="/gallery">Gallery</a><a className="active" href="/about">About</a><a href="/#contact">Contact</a></nav><a href="/#booking" className="nav-cta">Book now <span>↗</span></a></header>
+ <Navbar />
 
  <section className="about-hero"><div className="about-hero-bg"/><div className="about-hero-copy"><motion.p initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="section-kicker">Our story · Our place · Our people</motion.p><motion.h1 initial={{opacity:0,y:28}} animate={{opacity:1,y:0}} transition={{delay:.1,duration:.8}}>More than a hotel.<br/><em>A feeling of home.</em></motion.h1><motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:.35,duration:.8}} className="about-lead">FESTHER is a place created for meaningful stays, memorable gatherings and the kind of hospitality that stays with you long after you leave.</motion.p></div><div className="about-hero-number">EST. <span>FESTHER</span></div></section>
 
