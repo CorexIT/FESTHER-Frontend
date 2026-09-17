@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono, Poppins } from "next/font/google";
 import Footer from "./components/Footer";
 import "./globals.css";
+import "./gold-accents.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
