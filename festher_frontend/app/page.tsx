@@ -41,7 +41,6 @@ export default function Home() {
     </section>
 
     <AccommodationSection />
-
     <DiningTaste />
 
     <section className="intro-editorial" id="story">
@@ -78,6 +77,23 @@ export default function Home() {
     <section className="booking-editorial" id="booking"><div className="booking-overlay"/><Fade><p className="gold-label">Your time at FESTHER</p><h2>There is always<br/><em>something to celebrate.</em></h2><p>Plan your stay, dining experience or next memorable occasion with FESTHER.</p><a href="#contact">Start planning <span>↗</span></a></Fade></section>
 
     <PressSection />
+<<<<<<< HEAD
   
+=======
+    <style jsx global>{`
+      .festher-press .article-cats{margin-top:50px}
+      .festher-press .press-article h3{margin-top:50px}
+      .festher-press .press-date{margin-top:28px}
+      .festher-press .press-read{margin-top:38px}
+      .festher-press .press-nav{margin-top:50px}
+      @media(max-width:700px){
+        .festher-press .article-cats{margin-top:38px}
+        .festher-press .press-article h3{margin-top:42px}
+        .festher-press .press-date{margin-top:26px}
+        .festher-press .press-read{margin-top:34px}
+        .festher-press .press-nav{margin-top:44px}
+      }
+    `}</style>
+>>>>>>> 40f2d3ad61081f382621f186dc208f13bf1eb56f
   </main>;
 }
