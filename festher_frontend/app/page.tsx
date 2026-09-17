@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/Navbar";
 import PressSection from "./components/PressSection";
+
 import AccommodationSection from "./components/AccommodationSection";
 import DiningTaste from "./components/DiningTaste";
 
@@ -77,5 +78,6 @@ export default function Home() {
     <section className="booking-editorial" id="booking"><div className="booking-overlay"/><Fade><p className="gold-label">Your time at FESTHER</p><h2>There is always<br/><em>something to celebrate.</em></h2><p>Plan your stay, dining experience or next memorable occasion with FESTHER.</p><a href="#contact">Start planning <span>↗</span></a></Fade></section>
 
     <PressSection />
+  
   </main>;
 }
