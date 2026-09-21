@@ -17,12 +17,6 @@ interface CartPanelProps {
 }
 
 export default function CartPanel({ lines, offers, open, onClose, onQty, onRemove, onCheckout }: CartPanelProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;

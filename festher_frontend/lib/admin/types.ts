@@ -19,6 +19,7 @@ export interface ReviewComment {
   rating: number;
   date: string;
   status: CommentStatus;
+  active?: boolean;
 }
 
 export type AdminOfferType = "ACCOMMODATION" | "DINING" | "PACKAGES" | "SEASONAL";

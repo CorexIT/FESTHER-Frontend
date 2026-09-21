@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import type { GuestReview } from "@/lib/types";
 import { getApprovedReviews } from "@/services/reviews.service";
 import ReviewCard from "./ReviewCard";
-import ReviewForm from "./ReviewForm";
 
 const AUTO_MS = 6500;
 const SWIPE_PX = 48;
@@ -34,7 +33,6 @@ export default function GuestReviews() {
   const [itemWidth, setItemWidth] = useState(0);
   const [index, setIndex] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
@@ -72,7 +70,7 @@ export default function GuestReviews() {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, []);
+  }, [loadState]);
 
   const count = reviews.length;
   const maxIndex = Math.max(0, count - 1);
@@ -80,27 +78,23 @@ export default function GuestReviews() {
   const slideIndex = Math.min(index, maxIndex);
 
   useEffect(() => {
-    if (count <= 1) return;
+    if (!canSlide) return;
     const t = setInterval(() => {
       if (!pausedRef.current) {
         setIndex((v) => (v + 1) % count);
       }
     }, AUTO_MS);
     return () => clearInterval(t);
-  }, [count]);
+  }, [count, canSlide]);
 
-  const next = () => setIndex((v) => (v + 1) % count);
-  const prev = () => setIndex((v) => (v - 1 + count) % count);
+  const next = () => { if (canSlide) setIndex((v) => (v + 1) % count); };
+  const prev = () => { if (canSlide) setIndex((v) => (v - 1 + count) % count); };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (!canSlide || (e.pointerType === "mouse" && e.button !== 0)) return;
     swipeStartRef.current = e.clientX;
     setDragging(true);
-    try {
-      viewportRef.current?.setPointerCapture(e.pointerId);
-    } catch {
-      /* noop */
-    }
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const endSwipe = (x: number) => {
@@ -201,16 +195,6 @@ export default function GuestReviews() {
         </div>
       )}
 
-      <div className="gr-actions">
-        <button type="button" className="gr-cta" onClick={() => setIsFormOpen(true)}>
-          Share Your Experience
-          <span className="gr-cta-arrow" aria-hidden="true">
-            →
-          </span>
-        </button>
-      </div>
-
-      {isFormOpen ? <ReviewForm onClose={() => setIsFormOpen(false)} /> : null}
     </section>
   );
 }

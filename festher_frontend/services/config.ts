@@ -1,3 +1,5 @@
+import type { ApiResult } from "@/lib/types";
+
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
 export function isBackendConfigured(): boolean {
@@ -9,6 +11,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   try {
     res = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
+      signal: init?.signal ?? AbortSignal.timeout(10000),
       headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     });
   } catch {
@@ -23,4 +26,8 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
 
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+export function apiItems<T>(result: ApiResult<{ items: T[] }> | null | undefined): T[] {
+  const items = result?.data?.items;
+  return Array.isArray(items) ? items.filter((item) => item != null) : [];
 }

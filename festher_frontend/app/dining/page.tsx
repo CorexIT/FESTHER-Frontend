@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Navbar from "../components/Navbar";
 import OrderModal from "../components/offers/OrderModal";
 import ReservationModal from "../components/offers/ReservationModal";
 import DishCard from "../components/dining/DishCard";
 import DishModal from "../components/dining/DishModal";
-import CartPanel from "../components/dining/CartPanel";
+const CartPanel = dynamic(() => import("../components/dining/CartPanel"), { ssr: false });
 import CheckoutModal from "../components/dining/CheckoutModal";
 import DiningOfferCard from "../components/dining/DiningOfferCard";
 import DiningOfferModal from "../components/dining/DiningOfferModal";
@@ -33,8 +34,8 @@ const GALLERY: DiningGalleryItem[] = [
   { id: "photo-1517248135467-4c7edcad34c4", src: U("photo-1517248135467-4c7edcad34c4", 1100, 1100), title: "Evenings in good company", w: 1100, h: 1100 },
   { id: "photo-1424847651672-bf20a4b0982b", src: U("photo-1424847651672-bf20a4b0982b", 1700, 820), title: "Long lunches, slow afternoons", w: 1700, h: 820 },
   { id: "photo-1551024506-0bccd828d307", src: U("photo-1551024506-0bccd828d307", 900, 1200), title: "Sweet endings", w: 900, h: 1200 },
-  { id: "photo-1414235077428-338989a2e8c0", src: U("photo-1414235077428-338989a2e8c0", 1400, 950), title: "Plated with care", w: 1400, h: 950 },
-  { id: "photo-1504674900247-0877df9cc836", src: U("photo-1504674900247-0877df9cc836", 900, 1300), title: "From our table to yours", w: 900, h: 1300 },
+  { id: "plated-with-care", src: U("photo-1414235077428-338989a2e8c0", 1400, 950), title: "Plated with care", w: 1400, h: 950 },
+  { id: "from-our-table", src: U("photo-1504674900247-0877df9cc836", 900, 1300), title: "From our table to yours", w: 900, h: 1300 },
 ];
 
 type Filter = (typeof DINING_FILTERS)[number];

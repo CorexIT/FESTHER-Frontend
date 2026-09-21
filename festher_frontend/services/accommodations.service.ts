@@ -1,6 +1,6 @@
 import type { Accommodation, ApiResult } from "@/lib/types";
 import { accommodations } from "@/lib/data/accommodations";
-import { apiRequest, delay, isBackendConfigured } from "./config";
+import { apiRequest, apiItems, delay, isBackendConfigured } from "./config";
 
 export async function getAccommodations(): Promise<Accommodation[]> {
   if (!isBackendConfigured()) {
@@ -8,7 +8,7 @@ export async function getAccommodations(): Promise<Accommodation[]> {
     return accommodations;
   }
   const result = await apiRequest<ApiResult<{ items: Accommodation[] }>>("/api/accommodations");
-  return result.data?.items ?? [];
+  return apiItems(result);
 }
 
 export async function getAccommodation(id: string): Promise<Accommodation | undefined> {
@@ -19,7 +19,7 @@ export async function getAccommodation(id: string): Promise<Accommodation | unde
   const result = await apiRequest<ApiResult<{ accommodation: Accommodation }>>(
     `/api/accommodations/${encodeURIComponent(id)}`,
   );
-  return result.data?.accommodation;
+  return result?.data?.accommodation;
 }
 
 export async function getAccommodationBySlug(slug: string): Promise<Accommodation | undefined> {
@@ -30,5 +30,5 @@ export async function getAccommodationBySlug(slug: string): Promise<Accommodatio
   const result = await apiRequest<ApiResult<{ accommodation: Accommodation }>>(
     `/api/accommodations/slug/${encodeURIComponent(slug)}`,
   );
-  return result.data?.accommodation;
+  return result?.data?.accommodation;
 }

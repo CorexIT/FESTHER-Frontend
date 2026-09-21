@@ -57,22 +57,6 @@ export function validateReservation(form: {
   return errs;
 }
 
-export function validateReview(form: {
-  name: string;
-  email: string;
-  rating: number;
-  comment: string;
-}): Record<string, string> {
-  const errs: Record<string, string> = {};
-  if (!form.name.trim()) errs.name = "Please enter your full name.";
-  if (!form.email.trim()) errs.email = "Please enter your email address.";
-  else if (!isEmail(form.email)) errs.email = "Enter a valid email address.";
-  if (form.rating < 1 || form.rating > 5) errs.rating = "Select a star rating.";
-  if (!form.comment.trim()) errs.comment = "Please share a few words about your stay.";
-  else if (form.comment.trim().length < 10) errs.comment = "Your review should be at least 10 characters.";
-  return errs;
-}
-
 export function validateOrder(form: {
   customerName: string;
   phone: string;
@@ -82,6 +66,7 @@ export function validateOrder(form: {
   if (!form.customerName.trim()) errs.customerName = "Please enter your full name.";
   if (!form.phone.trim()) errs.phone = "Please enter a contact number.";
   else if (!isPhone(form.phone)) errs.phone = "Enter a valid phone number.";
-  if (form.email.trim() && !isEmail(form.email)) errs.email = "Enter a valid email address.";
+  if (!form.email.trim()) errs.email = "Please enter your email address.";
+  else if (!isEmail(form.email)) errs.email = "Enter a valid email address.";
   return errs;
 }
