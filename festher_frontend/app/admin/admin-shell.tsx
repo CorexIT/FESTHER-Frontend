@@ -48,6 +48,15 @@ const navItems: NavItem[] = [
     ),
   },
   {
+    label: "Restaurant Orders",
+    href: "/admin/orders",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M6 2h12v20L12 17l-6 5V2z" />
+      </svg>
+    ),
+  },
+  {
     label: "Offers",
     href: "/admin/offers",
     icon: (
@@ -63,6 +72,7 @@ const pageTitles: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/gallery": "Gallery",
   "/admin/comments": "Comments",
+  "/admin/orders": "Restaurant Orders",
   "/admin/offers": "Offers",
 };
 

@@ -117,7 +117,7 @@ export default function GuestReviews() {
           Guest Stories
         </motion.p>
         <motion.h2 {...rise(0.1)}>
-          Moments shared by <em>our guests.</em>
+          Moments shared by our guests.
         </motion.h2>
         <motion.p className="gr-desc" {...rise(0.2)}>
           Real words from guests who slowed down, stayed a while and found their favourite moments at FESTHER.

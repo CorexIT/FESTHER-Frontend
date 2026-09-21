@@ -1,6 +1,7 @@
 ﻿import type { ApiResult, OrderRequest, OrderStatus, PreparedOrder, RestaurantOrder } from "@/lib/types";
 import { orderPayload } from "@/lib/restaurant-order";
 import { apiRequest, isBackendConfigured } from "./config";
+import { getRestaurantOrderById } from "@/services/admin/store";
 
 function requireBackend() {
   if (!isBackendConfigured()) throw new Error("Online ordering is not available yet. Please order via WhatsApp.");
@@ -23,7 +24,11 @@ export function assertOrder(order: RestaurantOrder): RestaurantOrder {
 }
 
 export async function createOrder(request: OrderRequest, idempotencyKey: string): Promise<PreparedOrder> {
-  requireBackend();
+  if (!isBackendConfigured()) {
+    // Demo mode: there is no secure backend to sign PayHere values, so an
+    // online payment cannot be started here. No payment is faked.
+    throw new Error("Online card payments require the FESTHER payment service to be connected. Please order via WhatsApp.");
+  }
   const data = dataOf(await apiRequest<ApiResult<PreparedOrder>>("/api/orders", {
     method: "POST", headers: { "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(orderPayload(request)),
@@ -34,14 +39,18 @@ export async function createOrder(request: OrderRequest, idempotencyKey: string)
 }
 
 export async function getOrder(id: string, accessToken: string, signal?: AbortSignal): Promise<RestaurantOrder> {
-  requireBackend();
+  if (!isBackendConfigured()) return assertOrder(await getRestaurantOrderById(id));
   return assertOrder(dataOf(await apiRequest<ApiResult<{ order: RestaurantOrder }>>(`/api/orders/${encodeURIComponent(id)}`, {
     headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store", signal,
   })).order);
 }
 
 export async function retryOrderPayment(id: string, accessToken: string, key: string): Promise<PreparedOrder> {
-  requireBackend();
+  if (!isBackendConfigured()) {
+    const order = assertOrder(await getRestaurantOrderById(id));
+    // No backend means no freshly-signed PayHere values. Payment stays pending.
+    return { order, accessToken: accessToken || "demo", payment: undefined };
+  }
   const data = dataOf(await apiRequest<ApiResult<PreparedOrder>>(`/api/orders/${encodeURIComponent(id)}/payment`, {
     method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Idempotency-Key": key },
   }));

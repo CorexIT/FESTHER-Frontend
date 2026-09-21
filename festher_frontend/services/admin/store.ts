@@ -9,10 +9,12 @@ import type {
   ReviewComment,
   CommentInput,
 } from "@/lib/admin/types";
+import type { OrderStatus, RestaurantOrder } from "@/lib/types";
 import {
   sampleComments,
   sampleGalleryImages,
   sampleOffers,
+  sampleRestaurantOrders,
 } from "@/lib/admin/mock-data";
 import { delay } from "@/services/config";
 
@@ -21,6 +23,7 @@ const LATENCY = 350;
 let images = [...sampleGalleryImages];
 let comments = [...sampleComments];
 let offers = [...sampleOffers];
+let orders = [...sampleRestaurantOrders];
 
 function uid(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
@@ -127,4 +130,41 @@ export async function patchOffer(
 export async function removeOffer(id: string): Promise<void> {
   await delay(LATENCY);
   offers = offers.filter((o) => o.id !== id);
+}
+
+/* ------------------------------ Restaurant Orders ------------------------------ */
+
+export async function listRestaurantOrders(): Promise<RestaurantOrder[]> {
+  await delay(LATENCY);
+  return [...orders].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+// Orders recorded while the frontend runs in demo mode (no backend). Payment
+// state is set by verified payment processing only — demo records never mark
+// a PayHere payment as PAID.
+export async function recordRestaurantOrder(
+  order: RestaurantOrder,
+): Promise<RestaurantOrder> {
+  await delay(LATENCY);
+  orders = [order, ...orders];
+  return order;
+}
+
+export async function getRestaurantOrderById(id: string): Promise<RestaurantOrder> {
+  await delay(120);
+  const order = orders.find((o) => o.id === id);
+  if (!order) throw new Error("We could not find this order reference.");
+  return order;
+}
+
+export async function patchRestaurantOrder(
+  id: string,
+  orderStatus: OrderStatus,
+): Promise<RestaurantOrder> {
+  await delay(LATENCY);
+  const current = orders.find((o) => o.id === id);
+  if (!current) throw new Error("Order not found.");
+  const updated: RestaurantOrder = { ...current, orderStatus, version: current.version + 1 };
+  orders = orders.map((o) => (o.id === id ? updated : o));
+  return updated;
 }

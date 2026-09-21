@@ -8,9 +8,6 @@ const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Dining", href: "/dining" },
-  { label: "Our Collection", href: "/#stay", plus: true },
-  { label: "Journeys", href: "/gallery" },
-  { label: "Experiences", href: "/#experiences" },
   { label: "Offers", href: "/offers" },
   { label: "Gallery", href: "/gallery" },
 ];
@@ -19,9 +16,6 @@ const panelLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Dining", href: "/dining" },
-  { label: "Our Collection", href: "/#stay" },
-  { label: "Journeys", href: "/gallery" },
-  { label: "Experiences", href: "/#experiences" },
   { label: "Offers", href: "/offers" },
   { label: "Gallery", href: "/gallery" },
 ];
@@ -58,19 +52,10 @@ export default function Navbar() {
                 aria-current={pathname === link.href ? "page" : undefined}
               >
                 {link.label}
-                {link.plus ? (
-                  <span className="fh-nav-plus" aria-hidden="true">
-                    +
-                  </span>
-                ) : null}
               </Link>
             ))}
           </nav>
         </div>
-
-        <Link className="fh-nav-brand" href="/">
-          FESTHER
-        </Link>
 
         <div className="fh-nav-right">
           <button

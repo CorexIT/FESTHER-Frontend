@@ -13,6 +13,7 @@ import { getAccommodations } from "@/services/accommodations.service";
 import { getDiningItems } from "@/services/dining.service";
 import type { Accommodation, DiningItem, Offer } from "@/lib/types";
 import "../offers.css";
+import "../checkout.css";
 
 const FILTERS = ["ALL", "STAY", "DINING"] as const;
 type Filter = (typeof FILTERS)[number];

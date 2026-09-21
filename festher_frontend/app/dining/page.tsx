@@ -22,6 +22,7 @@ import { formatPrice } from "@/lib/format";
 import type { MenuItem, Offer } from "@/lib/types";
 import "../offers.css";
 import "../dining.css";
+import "../checkout.css";
 
 const U = (id: string, w: number, h: number) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
 

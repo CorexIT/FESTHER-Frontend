@@ -4,12 +4,10 @@ import { formatPrice } from "./format";
 export type OrderSummary = Pick<RestaurantOrder, "items" | "subtotal" | "discount" | "total" | "currency">;
 
 export function orderWhatsAppMessage(
-  order: OrderSummary & Pick<OrderRequest, "customerName" | "phone" | "email" | "specialInstructions">,
-  orderNumber?: string,
+  order: OrderSummary & Pick<OrderRequest, "customerName" | "phone" | "specialInstructions">,
 ): string {
   return [
     "Hello FESTHER,", "", "I would like to place a restaurant order.", "",
-    ...(orderNumber ? [`Order Number: ${orderNumber}`, ""] : []),
     "ORDER DETAILS", "",
     ...order.items.flatMap((item) => [
       item.name, `Quantity: ${item.quantity}`, `Unit Price: ${formatPrice(item.unitPrice, order.currency)}`,
@@ -18,7 +16,7 @@ export function orderWhatsAppMessage(
     `Subtotal: ${formatPrice(order.subtotal, order.currency)}`,
     ...(order.discount > 0 ? [`Discount: ${formatPrice(order.discount, order.currency)}`] : []),
     `Total: ${formatPrice(order.total, order.currency)}`, "", "CUSTOMER", "",
-    `Name: ${order.customerName}`, `Phone: ${order.phone}`, `Email: ${order.email}`, "",
+    `Name: ${order.customerName}`, `Phone: ${order.phone}`, "",
     "Special Instructions:", order.specialInstructions || "None", "",
     "Please confirm availability and my order.", "", "Thank you.",
   ].join("\n");

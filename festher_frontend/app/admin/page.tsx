@@ -6,6 +6,7 @@ import { useAdminData } from "./components/useAdminData";
 import { getComments } from "@/services/admin/comments.service";
 import { getGalleryImages } from "@/services/admin/gallery.service";
 import { getOffers } from "@/services/admin/offers.service";
+import { getRestaurantOrders } from "@/services/admin/orders.service";
 import { AdminStars } from "./components/AdminStars";
 
 function MetricSkeleton() {
@@ -29,13 +30,22 @@ export default function AdminDashboard() {
   const gallery = useAdminData(useCallback(() => getGalleryImages(), []));
   const comments = useAdminData(useCallback(() => getComments(), []));
   const offers = useAdminData(useCallback(() => getOffers(), []));
+  const restaurantOrders = useAdminData(useCallback(() => getRestaurantOrders(), []));
 
-  const loading = gallery.status === "loading" || offers.status === "loading";
+  const loading =
+    gallery.status === "loading" ||
+    offers.status === "loading" ||
+    restaurantOrders.status === "loading";
   const failed =
-    gallery.status === "error" || comments.status === "error" || offers.status === "error";
+    gallery.status === "error" ||
+    comments.status === "error" ||
+    offers.status === "error" ||
+    restaurantOrders.status === "error";
 
   const activeOffers = offers.data?.filter((o) => o.status === "active").length ?? 0;
   const inactiveOffers = (offers.data?.length ?? 0) - activeOffers;
+  const pendingOrders =
+    restaurantOrders.data?.filter((o) => o.orderStatus === "PENDING").length ?? 0;
 
   const recentComments =
     comments.data
@@ -74,6 +84,7 @@ export default function AdminDashboard() {
                   gallery.reload();
                   comments.reload();
                   offers.reload();
+                  restaurantOrders.reload();
                 }}
               >
                 Retry
@@ -86,6 +97,7 @@ export default function AdminDashboard() {
           <section className="adm-metrics" aria-label="Summary">
             {loading ? (
               <>
+                <MetricSkeleton />
                 <MetricSkeleton />
                 <MetricSkeleton />
                 <MetricSkeleton />
@@ -124,6 +136,13 @@ export default function AdminDashboard() {
                   <strong className="adm-metric-value">{inactiveOffers}</strong>
                   <span className="adm-metric-note">
                     Hidden until activated
+                  </span>
+                </div>
+                <div className="adm-card adm-metric">
+                  <span className="adm-metric-label">Restaurant Orders</span>
+                  <strong className="adm-metric-value">{restaurantOrders.data?.length ?? 0}</strong>
+                  <span className="adm-metric-note">
+                    <b>{pendingOrders}</b> awaiting action
                   </span>
                 </div>
               </>
