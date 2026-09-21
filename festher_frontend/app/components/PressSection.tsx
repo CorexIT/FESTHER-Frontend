@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { motion } from "framer-motion";
+import { animate, motion, useAnimationFrame, useMotionValue, useTransform } from "framer-motion";
 import Link from "next/link";
 
 const articles = [
@@ -12,9 +12,9 @@ const articles = [
     date: "17 Sep 2026",
     link: "/about",
     imgs: [
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1000&q=80",
+      "/boburu/boburu_1.jpg",
+      "/boburu/boburu_2.jpg",
+      "/boburu/boburu_3.jpg",
     ],
   },
   {
@@ -23,9 +23,9 @@ const articles = [
     date: "08 Sep 2026",
     link: "/#dine",
     imgs: [
-      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80",
+      "/asapuwa/asapuwa_1.jpg",
+      "/asapuwa/asapuwa_2.jpg",
+      "/asapuwa/asapuwa_3.jpg",
     ],
   },
   {
@@ -34,9 +34,9 @@ const articles = [
     date: "30 Aug 2026",
     link: "/#experiences",
     imgs: [
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80",
+      "/horton_place/horton_3.png",
+      "/horton_place/horton_2.png",
+      "/horton_place/horton_4.png",
     ],
   },
   {
@@ -45,9 +45,9 @@ const articles = [
     date: "18 Aug 2026",
     link: "/#booking",
     imgs: [
-      "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1000&q=80",
+       "/edison/edison_1.png",
+      "/edison/edison_2.png",    
+      "/edison/edison_3.png",
     ],
   },
   {
@@ -56,9 +56,9 @@ const articles = [
     date: "05 Aug 2026",
     link: "/#stay",
     imgs: [
-      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=80",
+      "/nine/nine_1.png",
+      "/nine/nine_2.png",
+      "/nine/nine_5.png",
     ],
   },
   {
@@ -67,9 +67,9 @@ const articles = [
     date: "22 Jul 2026",
     link: "/#stay",
     imgs: [
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80",
-      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1000&q=80",
+      "/flying/flying_2.png",
+      "/flying/flying_1.png",
+      "/flying/flying_3.png",
     ],
   },
 ];
@@ -86,9 +86,10 @@ const press = [
 const COUNT = press.length;
 const REP = 3;
 const SLIDES = Array.from({ length: REP }, () => press).flat();
-const STEP_UNIT = 100 / (COUNT * REP);
-const A = 5500;
-const MOVE_MS = 600;
+const ARTICLE_AUTO_MS = 6000;
+const SNAP_MS = 600;
+const DRIFT_MS = 3200;
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 function windowCount() {
   if (typeof window === "undefined") return 5;
@@ -103,41 +104,97 @@ function windowCount() {
 export default function PressSection() {
   const [index, setIndex] = useState(0);
   const [perView, setPerView] = useState(5);
-  const [pos, setPos] = useState(COUNT);
   const [dragging, setDragging] = useState(false);
-  const [dragDx, setDragDx] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [bump, setBump] = useState(0);
 
   const viewportRef = useRef<HTMLDivElement>(null);
-  const posRef = useRef(COUNT);
-  const dragRef = useRef(false);
-  const startRef = useRef({ x: 0, p: COUNT });
+  const initRef = useRef(false);
   const itemPxRef = useRef(0);
-  const wrapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyPxRef = useRef(0);
+  const velRef = useRef(0);
+  const dragRef = useRef(false);
+  const hoverRef = useRef(false);
+  const startRef = useRef({ x: 0, offset: 0 });
   const swipeX = useRef<number | null>(null);
+  const snapRef = useRef<ReturnType<typeof animate> | null>(null);
 
-  useEffect(() => {
-    posRef.current = pos;
-  }, [pos]);
+  const scroll = useMotionValue(0);
+  const trackX = useTransform(scroll, (v) => -v);
 
   useEffect(() => {
     const measure = () => {
       const p = windowCount();
       setPerView(p);
-      if (viewportRef.current) itemPxRef.current = viewportRef.current.clientWidth / p;
+      if (viewportRef.current) {
+        const item = viewportRef.current.clientWidth / p;
+        itemPxRef.current = item;
+        copyPxRef.current = item * COUNT;
+        velRef.current = item / DRIFT_MS;
+        if (!initRef.current) {
+          initRef.current = true;
+          scroll.set(copyPxRef.current);
+        }
+      }
     };
     measure();
     const ro = new ResizeObserver(measure);
     if (viewportRef.current) ro.observe(viewportRef.current);
-    const onResize = () => setBump((b) => b + 1);
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", onResize);
-      if (wrapTimer.current) clearTimeout(wrapTimer.current);
+      window.removeEventListener("resize", measure);
     };
-  }, []);
+  }, [scroll]);
+
+  useEffect(() => {
+    let raf = 0;
+    const frame = () => {
+      const s = scroll.get();
+      const cp = copyPxRef.current;
+      if (cp > 0) {
+        if (s >= 2 * cp) scroll.set(s - cp);
+        else if (s < cp) scroll.set(s + cp);
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [scroll]);
+
+  useAnimationFrame((_, delta) => {
+    if (hoverRef.current || dragRef.current || snapRef.current) return;
+    scroll.set(scroll.get() + velRef.current * Math.min(delta, 64));
+  });
+
+  const settleTo = useCallback(
+    (steps: number, duration: number) => {
+      const item = itemPxRef.current || 1;
+      const banded = ((steps - COUNT) % COUNT + COUNT) % COUNT + COUNT;
+      const target = banded * item;
+      const done = (controls: ReturnType<typeof animate>) => {
+        if (snapRef.current === controls) {
+          snapRef.current = null;
+          scroll.set(target);
+        }
+      };
+      if (snapRef.current) {
+        const prev = snapRef.current;
+        snapRef.current = null;
+        prev.stop();
+      }
+      const controls = animate(scroll, target, { duration, ease: EASE });
+      snapRef.current = controls;
+      controls.then(() => done(controls));
+    },
+    [scroll],
+  );
+
+  const pressStep = useCallback(
+    (delta: number) => {
+      const item = itemPxRef.current || 1;
+      settleTo(Math.round(scroll.get() / item) + delta, SNAP_MS / 1000);
+    },
+    [scroll, settleTo],
+  );
 
   const articlePrev = () => setIndex((v) => (v - 1 + articles.length) % articles.length);
   const articleNext = () => setIndex((v) => (v + 1) % articles.length);
@@ -154,47 +211,23 @@ export default function PressSection() {
     else if (dx > 54) articlePrev();
   };
 
-  const wrap = useCallback(() => {
-    const p = posRef.current;
-    if (p >= 2 * COUNT) setPos(p - COUNT);
-    else if (p < COUNT) setPos(p + COUNT);
-  }, []);
-
-  const animateTo = useCallback(
-    (target: number) => {
-      const max = SLIDES.length - perView;
-      const t = Math.max(0, Math.min(max, target));
-      setDragging(false);
-      setDragDx(0);
-      setPos(t);
-      if (wrapTimer.current) clearTimeout(wrapTimer.current);
-      wrapTimer.current = setTimeout(wrap, MOVE_MS + 40);
-    },
-    [perView, wrap],
-  );
-
-  const prevSlide = useCallback(() => {
-    setBump((b) => b + 1);
-    animateTo(posRef.current - 1);
-  }, [animateTo]);
-
-  const nextSlide = useCallback(() => {
-    setBump((b) => b + 1);
-    animateTo(posRef.current + 1);
-  }, [animateTo]);
-
   useEffect(() => {
-    if (paused || perView === 0) return;
-    const t = setTimeout(() => animateTo(posRef.current + 1), A);
-    return () => clearTimeout(t);
-  }, [paused, pos, bump, perView, animateTo]);
+    const t = setInterval(() => setIndex((v) => (v + 1) % articles.length), ARTICLE_AUTO_MS);
+    return () => clearInterval(t);
+  }, [index]);
+
+  const arrowPrev = () => pressStep(-1);
+  const arrowNext = () => pressStep(1);
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (snapRef.current) {
+      snapRef.current.stop();
+      snapRef.current = null;
+    }
     dragRef.current = true;
-    startRef.current = { x: e.clientX, p: posRef.current };
+    startRef.current = { x: e.clientX, offset: scroll.get() };
     setDragging(true);
-    setPaused(true);
     try {
       viewportRef.current?.setPointerCapture(e.pointerId);
     } catch {
@@ -204,30 +237,29 @@ export default function PressSection() {
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (!dragRef.current) return;
-    setDragDx(e.clientX - startRef.current.x);
+    scroll.set(startRef.current.offset - (e.clientX - startRef.current.x));
   };
 
-  const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+  const onPointerUp = () => {
     if (!dragRef.current) return;
     dragRef.current = false;
-    const dx = e.clientX - startRef.current.x;
     const item = itemPxRef.current || 1;
-    const steps = Math.round(dx / item);
-    const target = startRef.current.p - steps;
-    setPaused(false);
-    setBump((b) => b + 1);
-    animateTo(target);
+    const offset = scroll.get();
+    setDragging(false);
+    settleTo(Math.round(offset / item), 0.3);
   };
-
-  const base = -pos * STEP_UNIT;
-  const transform = dragging ? `translateX(calc(${base}% + ${dragDx}px))` : `translateX(${base}%)`;
-  const transition = dragging ? "none" : `transform ${MOVE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`;
 
   const a = articles[index];
 
   return (
     <section className="festher-press" id="press">
-      <div className="press-article" onPointerDown={onArticleDown} onPointerUp={onArticleUp} style={{ touchAction: "pan-y" }}>
+      <div
+        className="press-article"
+        onPointerDown={onArticleDown}
+        onPointerUp={onArticleUp}
+        onPointerCancel={onArticleUp}
+        style={{ touchAction: "pan-y" }}
+      >
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 12 }}
@@ -260,7 +292,9 @@ export default function PressSection() {
         <span className="press-count">
           <strong>{index + 1}</strong> / {articles.length}
         </span>
-        <i className="press-line" aria-hidden="true" />
+        <span className="press-line" aria-hidden="true">
+          <i style={{ width: `${((index + 1) / articles.length) * 100}%` }} />
+        </span>
         <button className="press-arrow" type="button" aria-label="Previous article" onClick={articlePrev}>
           ←
         </button>
@@ -270,7 +304,7 @@ export default function PressSection() {
       </div>
 
       <div className="press-carousel">
-        <button className="press-arrow press-arrow--row" type="button" aria-label="Previous publication" onClick={prevSlide}>
+        <button className="press-arrow press-arrow--row" type="button" aria-label="Previous publication" onClick={arrowPrev}>
           ←
         </button>
         <div
@@ -280,15 +314,14 @@ export default function PressSection() {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
-          onPointerEnter={() => setPaused(true)}
+          onPointerEnter={() => {
+            hoverRef.current = true;
+          }}
           onPointerLeave={() => {
-            if (!dragRef.current) {
-              setPaused(false);
-              setBump((b) => b + 1);
-            }
+            hoverRef.current = false;
           }}
         >
-          <div className="press-carousel-track" style={{ transform, transition }}>
+          <motion.div className="press-carousel-track" style={{ x: trackX }}>
             {SLIDES.map((p, i) => (
               <div className="press-item" key={`${p.key}-${i}`} style={{ flex: `0 0 ${100 / perView}%` }}>
                 <span className="press-logo-wrapper">
@@ -297,9 +330,9 @@ export default function PressSection() {
                 <p>{p.note}</p>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
-        <button className="press-arrow press-arrow--row" type="button" aria-label="Next publication" onClick={nextSlide}>
+        <button className="press-arrow press-arrow--row" type="button" aria-label="Next publication" onClick={arrowNext}>
           →
         </button>
       </div>

@@ -21,10 +21,8 @@
   color: var(--fh-gold) !important;
 }
 
-.under-link:hover,
 .dining-taste-explore:hover,
 .accommodation-view-all:hover,
-.accommodation-action:hover,
 .gallery-filter:hover,
 .gallery-filter.active {
   color: var(--fh-gold) !important;

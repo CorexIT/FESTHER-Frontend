@@ -6,19 +6,23 @@ import { usePathname } from "next/navigation";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Dining", href: "/dining" },
   { label: "Our Collection", href: "/#stay", plus: true },
-  { label: "Journeys", href: "/about" },
+  { label: "Journeys", href: "/gallery" },
   { label: "Experiences", href: "/#experiences" },
-  { label: "Offers", href: "/#offers", plus: true },
+  { label: "Offers", href: "/offers" },
   { label: "Gallery", href: "/gallery" },
 ];
 
 const panelLinks = [
   { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Dining", href: "/dining" },
   { label: "Our Collection", href: "/#stay" },
-  { label: "Journeys", href: "/about" },
+  { label: "Journeys", href: "/gallery" },
   { label: "Experiences", href: "/#experiences" },
-  { label: "Offers", href: "/#offers" },
+  { label: "Offers", href: "/offers" },
   { label: "Gallery", href: "/gallery" },
 ];
 

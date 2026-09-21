@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const imgs = [
   {
     src: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&h=1400&q=80",
@@ -15,7 +17,7 @@ const imgs = [
 
 export default function DiningTaste() {
   return (
-    <section className="dining-taste-section">
+    <section className="dining-taste-section" id="dine">
       <div className="dining-taste-panel">
         <div className="dining-taste-copy">
           <h2>A Taste of Sri Lanka</h2>
@@ -23,9 +25,9 @@ export default function DiningTaste() {
             Discover the warmth of Sri Lankan dining through fresh local ingredients, timeless island
             flavours and thoughtfully prepared dishes, served in a relaxed setting inspired by nature.
           </p>
-          <a href="#dine" className="dining-taste-explore">
-            Explore
-          </a>
+          <Link href="/dining" className="dining-taste-explore">
+            Explore Dining →
+          </Link>
         </div>
 
         <div className="dining-taste-images">

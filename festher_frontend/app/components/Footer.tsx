@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const exploreLinks = [
   { label: "Home", href: "/" },
@@ -8,7 +9,7 @@ const exploreLinks = [
   { label: "Our Collection", href: "/#stay" },
   { label: "Journeys", href: "/gallery" },
   { label: "Wellness", href: "/#experiences" },
-  { label: "Offers", href: "/#offers" },
+  { label: "Offers", href: "/offers" },
   { label: "Sustainability", href: null },
   { label: "Blog", href: null },
   { label: "Careers", href: null },
@@ -48,6 +49,8 @@ const socials = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) return null;
   return (
     <footer className="fh-footer" id="contact">
       <div className="fh-footer-top">
