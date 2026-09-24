@@ -28,6 +28,11 @@ const serif = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: { url: "/f.png", type: "image/png" },
+    shortcut: "/f.png",
+    apple: "/f.png",
+  },
   title: "FESTHER | Every Moment, A Celebration",
   description: "Discover FESTHER — thoughtful stays, memorable dining and warm Sri Lankan hospitality.",
 };

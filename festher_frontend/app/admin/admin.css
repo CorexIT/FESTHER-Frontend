@@ -2,6 +2,7 @@
    FESTHER ADMIN — black / white / gold design system
    ============================================================ */
 .adm-layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh;background:#f6f4ee;color:var(--ink,#191711);font-family:var(--font-poppins),"Poppins",sans-serif}
+.adm-main{min-width:0}
 
 /* ---------------- Sidebar ---------------- */
 .adm-sidebar{position:sticky;top:0;align-self:start;z-index:80;height:100vh;display:flex;flex-direction:column;background:var(--dark,#0c0b08);color:#fff}
@@ -74,7 +75,7 @@
 
 /* ---------------- Toolbar / search ---------------- */
 .adm-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
-.adm-search{position:relative;flex:1 1 260px;min-width:220px}
+.adm-search{position:relative;flex:1 1 260px;min-width:0}
 .adm-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#9a9a94;pointer-events:none}
 .adm-search-input{width:100%;padding:11px 14px 11px 40px;border:1px solid #ddd8cd;background:#fff;font-family:inherit;font-size:13px;color:#191711;outline:none;transition:border-color .3s,box-shadow .3s}
 .adm-search-input::placeholder{color:#b4b4ae}
@@ -242,13 +243,13 @@
 /* ============================================================
    Responsive
    ============================================================ */
-@media(max-width:1180px){
+@media(max-width:1320px){
   .adm-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
   .adm-cols-comments{grid-template-columns:170px minmax(0,1fr) 120px 108px 84px 150px}
   .adm-cols-offers{grid-template-columns:56px minmax(0,1fr) 140px 130px 96px 150px}
   .adm-cols-orders{grid-template-columns:96px minmax(0,1fr) 100px 112px 76px 104px 140px 102px}
 }
-@media(max-width:1024px){
+@media(max-width:1264px){
   .adm-layout{grid-template-columns:1fr}
   .adm-sidebar{position:fixed;left:0;top:0;width:280px;transform:translateX(-102%);visibility:hidden;transition:transform .4s cubic-bezier(.4,0,.2,1),visibility .4s}
   .adm-sidebar--open{transform:translateX(0);visibility:visible}

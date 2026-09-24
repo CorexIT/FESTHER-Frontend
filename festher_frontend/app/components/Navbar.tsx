@@ -18,8 +18,8 @@ const festherWords: { label: string; href?: string }[] = [
   { label: "Event Planning", href: "/event-planning" },
   { label: "Buffet Scene", href: "/buffet-scene" },
   { label: "Tourism & Transport", href: "/tourism-transport" },
-  { label: "Hotel & Villa" },
-  { label: "Restaurant", href: "/#dining" },
+  { label: "Hotel & Villa", href: "/accommodation" },
+  { label: "Restaurant", href: "/dining" },
 ];
 
 export default function Navbar() {
@@ -85,46 +85,37 @@ export default function Navbar() {
             <span className="fh-nav-brand-name">FESTHR</span>
             <span className="fh-nav-brand-sub">Sri Lanka</span>
           </Link>
-          <nav className="fh-nav-links" aria-label="Primary navigation">
-            {primaryLinks.map((link) => (
-              <Link
-                key={link.label}
-                className={`fh-nav-link${pathname === link.href ? " fh-nav-link--active" : ""}`}
-                href={link.href}
-                aria-current={pathname === link.href ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              className={`fh-nav-link${pathname === "/contact" ? " fh-nav-link--active" : ""}`}
-              href="/contact"
-              aria-current={pathname === "/contact" ? "page" : undefined}
-            >
-              Contact
-            </Link>
-          </nav>
         </div>
 
-        <div className="fh-nav-right">
-          <Link className="fh-nav-book" href="/#booking">
-            Book your stay
+        <nav className="fh-nav-links" aria-label="Primary navigation">
+          {primaryLinks.map((link) => (
+            <Link
+              key={link.label}
+              className={`fh-nav-link${pathname === link.href ? " fh-nav-link--active" : ""}`}
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            className={`fh-nav-link${pathname === "/contact" ? " fh-nav-link--active" : ""}`}
+            href="/contact"
+            aria-current={pathname === "/contact" ? "page" : undefined}
+          >
+            Contact
           </Link>
-          <span className="fh-nav-search" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="16.5" y1="16.5" x2="21" y2="21" />
-            </svg>
-          </span>
-          <span className="fh-nav-divider" aria-hidden="true" />
+        </nav>
+
+        <div className="fh-nav-right">
           <button
             type="button"
             className="fh-nav-menu"
             aria-expanded={open}
             aria-controls="fh-nav-panel"
-            aria-label="Open menu"
             onClick={() => setOpen((v) => !v)}
           >
+            <span className="fh-nav-menu-text">Menu</span>
             <span className="fh-nav-burger" aria-hidden="true">
               <i />
               <i />

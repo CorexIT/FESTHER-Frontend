@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import PressSection from "./components/PressSection";
 import AccommodationSection from "./components/AccommodationSection";
 import DiningTaste from "./components/DiningTaste";
+import ServicesSection from "./components/ServicesSection";
 import AboutPreview from "./components/AboutPreview";
 import GuestReviews from "./components/GuestReviews";
 
@@ -52,6 +53,8 @@ export default function Home() {
         .festher-press .press-nav{margin-top:44px}
       }
     `}</style>
+
+    <ServicesSection />
 
     <GuestReviews />
   </main>;
