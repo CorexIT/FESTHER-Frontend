@@ -18,7 +18,7 @@ const imgs = [
 export default function DiningTaste() {
   return (
     <section className="dining-taste-section" id="dine">
-      <div className="dining-taste-panel">
+      <div className="dining-taste-panel" id="dining">
         <div className="dining-taste-copy">
           <h2>A Taste of Sri Lanka</h2>
           <p>

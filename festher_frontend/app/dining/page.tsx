@@ -10,6 +10,7 @@ import DishCard from "../components/dining/DishCard";
 import DishModal from "../components/dining/DishModal";
 const CartPanel = dynamic(() => import("../components/dining/CartPanel"), { ssr: false });
 import CheckoutModal from "../components/dining/CheckoutModal";
+import OrderMethodModal from "../components/dining/OrderMethodModal";
 import DiningOfferCard from "../components/dining/DiningOfferCard";
 import DiningOfferModal from "../components/dining/DiningOfferModal";
 import ReservationForm from "../components/dining/ReservationForm";
@@ -55,6 +56,7 @@ export default function DiningPage() {
 
   const [lines, setLines] = useState<CartLine[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [methodOpen, setMethodOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
@@ -338,6 +340,18 @@ export default function DiningPage() {
 
       {reserveOffer ? <ReservationModal offer={reserveOffer} onClose={() => setReserveOffer(null)} /> : null}
 
+      {methodOpen && lines.length > 0 ? (
+        <OrderMethodModal
+          lines={lines}
+          offers={offers}
+          onClose={() => setMethodOpen(false)}
+          onCardPayment={() => {
+            setMethodOpen(false);
+            setCheckoutOpen(true);
+          }}
+        />
+      ) : null}
+
       {checkoutOpen ? (
         <CheckoutModal
           lines={lines}
@@ -355,8 +369,9 @@ export default function DiningPage() {
         onQty={changeQty}
         onRemove={removeLine}
         onCheckout={() => {
+          if (lines.length === 0) return;
           setCartOpen(false);
-          setCheckoutOpen(true);
+          setMethodOpen(true);
         }}
       />
     </main>

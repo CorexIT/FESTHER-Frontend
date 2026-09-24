@@ -4,19 +4,8 @@
 }
 
 /* Gold stays secondary to FESTHER green: small interactive accents only. */
-.fh-nav-link::after,
-.fh-nav-link--active::after {
-  background-color: var(--fh-gold) !important;
-}
-
-.fh-nav-link:hover,
-.fh-nav-link--active {
-  color: var(--fh-gold) !important;
-}
-
 .book-link:hover,
-.fh-book:hover,
-.fh-nav-book:hover {
+.fh-book:hover {
   border-color: var(--fh-gold) !important;
   color: var(--fh-gold) !important;
 }

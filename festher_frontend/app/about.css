@@ -1,20 +1,7 @@
 /* ============ FESTHER ABOUT PAGE ============ */
 .about-page{background:#fff;color:var(--ink,#191711);font-family:var(--font-poppins),"Poppins",sans-serif}
 
-/* ---- About page navbar: solid white bar, fixes on scroll ---- */
-.about-page--scrolled .fh-nav{position:fixed;left:0;right:0;background:#fff;color:var(--fh-green);border-bottom:1px solid var(--fh-line)}
-.about-page--scrolled .fh-nav .fh-nav-mark{border-color:rgba(72,106,96,.55);color:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-link{color:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-link:hover{color:var(--fh-muted)}
-.about-page--scrolled .fh-nav .fh-nav-link--active{color:var(--fh-green-dark)}
-.about-page--scrolled .fh-nav .fh-nav-link--active:after{background:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-plus{color:var(--fh-muted)}
-.about-page--scrolled .fh-nav .fh-nav-brand{color:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-menu{color:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-burger i{background:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-menu-label{color:var(--fh-green)}
-.about-page--scrolled .fh-nav .fh-nav-book{background:var(--fh-green);border:0;color:#fff}
-.about-page--scrolled .fh-nav .fh-nav-book:hover{background:var(--fh-green-dark)}
+/* ---- About page navbar: the Navbar component owns the hero/solid scroll state ---- */
 
 /* ---- Our Story ---- */
 .ab-story{position:relative;background:#fff;overflow:hidden;padding:clamp(24px,3vw,44px) 0 clamp(84px,8vw,124px)}

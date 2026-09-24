@@ -43,6 +43,7 @@
 
 /* ---------- Order method ---------- */
 .ck-methods{display:flex;flex-direction:column;gap:0;margin-top:20px}
+.ck-methods--choice{gap:14px}
 .ck-method{display:flex;align-items:center;gap:18px;width:100%;padding:20px 22px;border:1px solid #e3e0d8;background:#fff;color:#191711;font-family:inherit;text-align:left;cursor:pointer;transition:border-color .3s,background .3s,box-shadow .3s}
 .ck-method:hover{border-color:var(--gold,#b99455);background:#fbfaf6;box-shadow:0 0 0 3px rgba(184,155,94,.1)}
 .ck-method:disabled{opacity:.55;cursor:not-allowed}

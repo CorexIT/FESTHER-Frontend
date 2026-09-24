@@ -22,6 +22,43 @@ export function orderWhatsAppMessage(
   ].join("\n");
 }
 
+export interface CartMessageItem {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  notes?: string;
+}
+
+export type CartMessageOrder = Pick<OrderSummary, "subtotal" | "discount" | "total" | "currency"> & {
+  items: CartMessageItem[];
+};
+
+/**
+ * Builds the customer-facing order message sent from the cart drawer's
+ * "Proceed to Order" step. Every value comes from the current cart state, so
+ * quantities and totals always match what the guest sees in the drawer.
+ */
+export function cartWhatsAppMessage(order: CartMessageOrder): string {
+  const currency = order.currency;
+  return [
+    "Hello FESTHR,", "", "I would like to place a new restaurant order.", "",
+    "ORDER DETAILS", "",
+    ...order.items.flatMap((item, index) => [
+      `${index + 1}. ${item.name}`,
+      `Quantity: ${item.quantity}`,
+      `Price: ${formatPrice(item.unitPrice, currency)}`,
+      `Item Total: ${formatPrice(item.unitPrice * item.quantity, currency)}`,
+      ...(item.notes ? [`Notes: ${item.notes}`] : []),
+      "",
+    ]),
+    "------------------------",
+    `Subtotal: ${formatPrice(order.subtotal, currency)}`,
+    ...(order.discount > 0 ? [`Discount: ${formatPrice(order.discount, currency)}`] : []),
+    `Total: ${formatPrice(order.total, currency)}`,
+    "------------------------", "", "Please confirm my order.", "", "Thank you.",
+  ].join("\n");
+}
+
 // Whitelist outbound fields: even a tampered caller cannot send prices or payment status.
 export function orderPayload(request: OrderRequest): OrderRequest {
   if (!request.items.length || request.items.some((item) =>

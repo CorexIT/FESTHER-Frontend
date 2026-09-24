@@ -2,7 +2,7 @@
 /* Black / white / gold luxury styling, matching the public site. */
 
 .ph-page{min-height:100vh;background:#FFFFFF;color:var(--ink,#191711);font-family:var(--font-poppins),"Poppins",sans-serif}
-.ph-page .fh-nav{position:relative;z-index:50;background:#fff}
+.ph-page .fh-nav{z-index:50}
 .ph-wrap{width:min(92vw,720px);margin:0 auto;padding:clamp(48px,8vw,96px) 0 120px;display:flex;justify-content:center}
 
 .ph-panel{flex:1;padding:clamp(30px,5vw,54px) clamp(20px,4.5vw,54px);border:1px solid #e8e5de;background:#fff;text-align:center;animation:ph-up .4s cubic-bezier(.22,1,.36,1)}
