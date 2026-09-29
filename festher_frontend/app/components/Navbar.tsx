@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,23 +9,169 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
 const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Offers", href: "/offers" },
-  { label: "Gallery", href: "/gallery" },
 ];
 
-const festherWords: { label: string; href?: string }[] = [
+// Every entry reuses an existing route — no duplicate pages created.
+const serviceLinks = [
   { label: "Festival", href: "/festival" },
   { label: "Event Planning", href: "/event-planning" },
-  { label: "Buffet Scene", href: "/buffet-scene" },
+  { label: "Food Ordering Service", href: "/dining" },
   { label: "Tourism & Transport", href: "/tourism-transport" },
   { label: "Hotel & Villa", href: "/accommodation" },
+  { label: "Event Management", href: "/buffet-scene" },
   { label: "Restaurant", href: "/dining" },
 ];
+
+const packageLinks = [
+  { label: "Packages", href: "/packages" },
+  { label: "Offers", href: "/offers" },
+];
+
+const trailingLinks = [
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+];
+
+function isServiceActive(pathname: string): boolean {
+  return serviceLinks.some(({ href }) =>
+    href === "/accommodation" ? pathname.startsWith(href) : pathname === href,
+  );
+}
+
+function isPackagesActive(pathname: string): boolean {
+  return packageLinks.some(({ href }) => pathname === href);
+}
+
+function Chevron({ className, size = 11 }: { className?: string; size?: number }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 12 12"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2.5 4.5 6 8l3.5-3.5" />
+    </svg>
+  );
+}
+
+function RightArrow() {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      width="12"
+      height="12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4.5 2.5 8 6l-3.5 3.5" />
+    </svg>
+  );
+}
+
+interface NavDropdownProps {
+  label: string;
+  active: boolean;
+  open: boolean;
+  links: { label: string; href: string }[];
+  innerRef: RefObject<HTMLDivElement | null>;
+  onEnter: () => void;
+  onLeave: () => void;
+  onToggle: () => void;
+  onClose: () => void;
+}
+
+function NavDropdown({ label, active, open, links, innerRef, onEnter, onLeave, onToggle, onClose }: NavDropdownProps) {
+  return (
+    <div
+      className={`fh-nav-item${open ? " fh-nav-item--open" : ""}`}
+      ref={innerRef}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      <button
+        type="button"
+        className={`fh-nav-link fh-nav-services-btn${active ? " fh-nav-link--active" : ""}`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-current={active ? "page" : undefined}
+        onClick={onToggle}
+      >
+        {label}
+        <Chevron className="fh-nav-chevron" />
+      </button>
+      <div className="fh-nav-dropdown" role="menu" aria-label={label}>
+        {links.map((link) => (
+          <Link
+            key={link.label}
+            href={link.href}
+            role="menuitem"
+            className="fh-nav-dropdown-link"
+            onClick={onClose}
+          >
+            <span>{link.label}</span>
+            <RightArrow />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface PanelGroupProps {
+  label: string;
+  expanded: boolean;
+  links: { label: string; href: string }[];
+  onToggle: () => void;
+  onNavigate: () => void;
+}
+
+function PanelGroup({ label, expanded, links, onToggle, onNavigate }: PanelGroupProps) {
+  return (
+    <li className="fh-nav-panel-word fh-nav-panel-word--group">
+      <button
+        type="button"
+        className="fh-nav-panel-subbtn"
+        aria-expanded={expanded}
+        onClick={onToggle}
+      >
+        <span>{label}</span>
+        <Chevron className={`fh-nav-panel-chevron${expanded ? " is-open" : ""}`} size={14} />
+      </button>
+      <ul className={`fh-nav-panel-sub${expanded ? " is-open" : ""}`} aria-label={label}>
+        {links.map((link) => (
+          <li key={link.label}>
+            <Link href={link.href} onClick={onNavigate}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </li>
+  );
+}
+
+type OpenMenu = "services" | "packages" | null;
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
+  const [expandedMenu, setExpandedMenu] = useState<OpenMenu>(null);
   const navRef = useRef<HTMLElement | null>(null);
+  const servicesRef = useRef<HTMLDivElement | null>(null);
+  const packagesRef = useRef<HTMLDivElement | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [overHero, setOverHero] = useState(false);
   const [pinned, setPinned] = useState(false);
 
@@ -65,7 +211,10 @@ export default function Navbar() {
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setOpenMenu(null);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -73,6 +222,57 @@ export default function Navbar() {
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  // Close the desktop dropdown when navigating or clicking outside it.
+  useEffect(() => {
+    setOpenMenu(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      const insideServices = servicesRef.current?.contains(target);
+      const insidePackages = packagesRef.current?.contains(target);
+      if (!insideServices && !insidePackages) setOpenMenu(null);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [openMenu]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
+
+  const enterMenu = (menu: Exclude<OpenMenu, null>) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenMenu(menu);
+  };
+
+  const scheduleCloseMenu = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 140);
+  };
+
+  const toggleMenu = (menu: Exclude<OpenMenu, null>) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenMenu((current) => (current === menu ? null : menu));
+  };
+
+  const closeMenus = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenMenu(null);
+  };
+
+  const toggleExpanded = (menu: Exclude<OpenMenu, null>) => {
+    setExpandedMenu((current) => (current === menu ? null : menu));
+  };
+
+  const closePanel = () => setOpen(false);
+  const servicesActive = isServiceActive(pathname);
+  const packagesActive = isPackagesActive(pathname);
 
   return (
     <header
@@ -98,13 +298,41 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            className={`fh-nav-link${pathname === "/contact" ? " fh-nav-link--active" : ""}`}
-            href="/contact"
-            aria-current={pathname === "/contact" ? "page" : undefined}
-          >
-            Contact
-          </Link>
+
+          <NavDropdown
+            label="Services"
+            active={servicesActive}
+            open={openMenu === "services"}
+            links={serviceLinks}
+            innerRef={servicesRef}
+            onEnter={() => enterMenu("services")}
+            onLeave={scheduleCloseMenu}
+            onToggle={() => toggleMenu("services")}
+            onClose={closeMenus}
+          />
+
+          <NavDropdown
+            label="Packages"
+            active={packagesActive}
+            open={openMenu === "packages"}
+            links={packageLinks}
+            innerRef={packagesRef}
+            onEnter={() => enterMenu("packages")}
+            onLeave={scheduleCloseMenu}
+            onToggle={() => toggleMenu("packages")}
+            onClose={closeMenus}
+          />
+
+          {trailingLinks.map((link) => (
+            <Link
+              key={link.label}
+              className={`fh-nav-link${pathname === link.href ? " fh-nav-link--active" : ""}`}
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="fh-nav-right">
@@ -113,6 +341,7 @@ export default function Navbar() {
             className="fh-nav-menu"
             aria-expanded={open}
             aria-controls="fh-nav-panel"
+            aria-label="Open navigation menu"
             onClick={() => setOpen((v) => !v)}
           >
             <span className="fh-nav-menu-text">Menu</span>
@@ -127,7 +356,7 @@ export default function Navbar() {
 
       <div
         className={`fh-nav-overlay${open ? " fh-nav-overlay--open" : ""}`}
-        onClick={() => setOpen(false)}
+        onClick={closePanel}
         aria-hidden="true"
       />
 
@@ -142,7 +371,7 @@ export default function Navbar() {
           <button
             type="button"
             className="fh-nav-panel-close"
-            onClick={() => setOpen(false)}
+            onClick={closePanel}
             aria-label="Close menu"
           >
             <svg
@@ -161,16 +390,36 @@ export default function Navbar() {
           </button>
         </div>
 
-        <ul className="fh-nav-panel-words" aria-label="What FESTHR stands for">
-          {festherWords.map((word) => (
-            <li key={word.label} className="fh-nav-panel-word">
-              {word.href ? (
-                <Link href={word.href} onClick={() => setOpen(false)}>
-                  {word.label}
-                </Link>
-              ) : (
-                word.label
-              )}
+        <ul className="fh-nav-panel-words" aria-label="Site navigation">
+          <li className="fh-nav-panel-word">
+            <Link href="/" onClick={closePanel}>
+              Home
+            </Link>
+          </li>
+          <li className="fh-nav-panel-word">
+            <Link href="/about" onClick={closePanel}>
+              About
+            </Link>
+          </li>
+          <PanelGroup
+            label="Services"
+            expanded={expandedMenu === "services"}
+            links={serviceLinks}
+            onToggle={() => toggleExpanded("services")}
+            onNavigate={closePanel}
+          />
+          <PanelGroup
+            label="Packages"
+            expanded={expandedMenu === "packages"}
+            links={packageLinks}
+            onToggle={() => toggleExpanded("packages")}
+            onNavigate={closePanel}
+          />
+          {trailingLinks.map((link) => (
+            <li key={link.label} className="fh-nav-panel-word">
+              <Link href={link.href} onClick={closePanel}>
+                {link.label}
+              </Link>
             </li>
           ))}
         </ul>
@@ -178,7 +427,7 @@ export default function Navbar() {
         <Link
           className="fh-nav-panel-book"
           href="/#booking"
-          onClick={() => setOpen(false)}
+          onClick={closePanel}
         >
           Book your stay
         </Link>

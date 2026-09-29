@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { GuestReview } from "@/lib/types";
 import { getApprovedReviews } from "@/services/reviews.service";
 import ReviewCard from "./ReviewCard";
+import { useHorizontalScroll } from "./useHorizontalScroll";
+import "./horizontal-scroll.css";
 
 const AUTO_MS = 6500;
-const SWIPE_PX = 48;
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 function viewCount(): number {
@@ -30,13 +30,11 @@ export default function GuestReviews() {
   const [reviews, setReviews] = useState<GuestReview[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
   const [perView, setPerView] = useState(3);
-  const [itemWidth, setItemWidth] = useState(0);
-  const [index, setIndex] = useState(0);
-  const [dragging, setDragging] = useState(false);
 
-  const viewportRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
-  const swipeStartRef = useRef<number | null>(null);
+  const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { ref, dragging, prev, next, onPointerDown, onPointerMove, endDrag } =
+    useHorizontalScroll();
 
   useEffect(() => {
     let alive = true;
@@ -55,60 +53,41 @@ export default function GuestReviews() {
   }, []);
 
   useEffect(() => {
-    const measure = () => {
-      const vp = viewportRef.current;
-      if (!vp) return;
-      const p = viewCount();
-      setPerView(p);
-      setItemWidth(vp.clientWidth / p);
-    };
+    const measure = () => setPerView(viewCount());
     measure();
-    const ro = new ResizeObserver(measure);
-    if (viewportRef.current) ro.observe(viewportRef.current);
     window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [loadState]);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const count = reviews.length;
-  const maxIndex = Math.max(0, count - 1);
   const canSlide = count > perView;
-  const slideIndex = Math.min(index, maxIndex);
 
+  // Auto-advance via native scroll. Pauses on hover and while the user interacts.
   useEffect(() => {
     if (!canSlide) return;
-    const t = setInterval(() => {
-      if (!pausedRef.current) {
-        setIndex((v) => (v + 1) % count);
-      }
+    if (autoRef.current) clearInterval(autoRef.current);
+    autoRef.current = setInterval(() => {
+      const el = ref.current;
+      if (!el || pausedRef.current || document.hidden) return;
+      const first = el.querySelector<HTMLElement>(":scope > *");
+      const gap = parseFloat(getComputedStyle(el).columnGap || "0") || 0;
+      const step = first
+        ? first.getBoundingClientRect().width + gap
+        : el.clientWidth / perView;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+      el.scrollBy({ left: atEnd ? -el.scrollWidth : step, behavior: "smooth" });
     }, AUTO_MS);
-    return () => clearInterval(t);
-  }, [count, canSlide]);
+    return () => {
+      if (autoRef.current) clearInterval(autoRef.current);
+    };
+  }, [count, canSlide, perView, ref]);
 
-  const next = () => { if (canSlide) setIndex((v) => (v + 1) % count); };
-  const prev = () => { if (canSlide) setIndex((v) => (v - 1 + count) % count); };
-
-  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!canSlide || (e.pointerType === "mouse" && e.button !== 0)) return;
-    swipeStartRef.current = e.clientX;
-    setDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
-
-  const endSwipe = (x: number) => {
-    if (swipeStartRef.current == null) return;
-    const dx = x - swipeStartRef.current;
-    swipeStartRef.current = null;
-    setDragging(false);
-    if (Math.abs(dx) >= SWIPE_PX) {
-      if (dx < 0) next();
-      else prev();
-    }
-  };
-
-  const trackItems = canSlide ? [...reviews, ...reviews] : reviews;
+  const pause = useCallback(() => {
+    pausedRef.current = true;
+  }, []);
+  const resume = useCallback(() => {
+    pausedRef.current = false;
+  }, []);
 
   return (
     <section className="guest-reviews" id="guest-stories">
@@ -152,36 +131,40 @@ export default function GuestReviews() {
             ←
           </button>
           <div
-            className={`gr-viewport${dragging ? " is-dragging" : ""}`}
-            ref={viewportRef}
-            style={{ touchAction: "pan-y" }}
-            onPointerDown={onPointerDown}
-            onPointerUp={(e) => endSwipe(e.clientX)}
-            onPointerCancel={(e) => endSwipe(e.clientX)}
-            onPointerEnter={() => {
-              pausedRef.current = true;
+            className={`gr-viewport horizontal-scroll horizontal-scroll--snap${dragging ? " is-dragging" : ""}`}
+            ref={ref}
+            onPointerDown={(e) => {
+              pause();
+              onPointerDown(e);
             }}
+            onPointerMove={onPointerMove}
+            onPointerUp={() => {
+              endDrag();
+              resume();
+            }}
+            onPointerCancel={() => {
+              endDrag();
+              resume();
+            }}
+            onPointerEnter={pause}
             onPointerLeave={() => {
-              pausedRef.current = false;
-              swipeStartRef.current = null;
-              setDragging(false);
+              endDrag();
+              resume();
             }}
+            onTouchStart={pause}
+            onTouchEnd={resume}
           >
-            <motion.div
-              className="gr-track"
-              animate={{ x: canSlide ? -slideIndex * itemWidth : 0 }}
-              transition={{ duration: 0.6, ease: EASE }}
-            >
-              {trackItems.map((review, i) => (
+            <div className="gr-track gr-track--native">
+              {reviews.map((review) => (
                 <div
                   className="gr-slide"
-                  key={`${review.id}-${i}`}
+                  key={review.id}
                   style={{ flex: `0 0 ${100 / perView}%` }}
                 >
                   <ReviewCard review={review} />
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
           <button
             className="gr-arrow"

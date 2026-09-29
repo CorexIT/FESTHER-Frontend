@@ -26,7 +26,7 @@ export default function DiningTaste() {
             flavours and thoughtfully prepared dishes, served in a relaxed setting inspired by nature.
           </p>
           <Link href="/dining" className="dining-taste-explore">
-            Explore Dining →
+            Explore Dining <span className="dining-taste-explore-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
 

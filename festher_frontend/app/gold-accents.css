@@ -10,14 +10,12 @@
   color: var(--fh-gold) !important;
 }
 
-.dining-taste-explore:hover,
 .accommodation-view-all:hover,
 .gallery-filter:hover,
 .gallery-filter.active {
   color: var(--fh-gold) !important;
 }
 
-.dining-taste-explore::after,
 .accommodation-view-all::after,
 .gallery-filter.active::after {
   background: var(--fh-gold) !important;

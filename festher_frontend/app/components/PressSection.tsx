@@ -1,14 +1,36 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
-import { animate, motion, useAnimationFrame, useMotionValue, useTransform } from "framer-motion";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
+import { motion } from "framer-motion";
+import { useHorizontalScroll } from "./useHorizontalScroll";
+import { directionsUrl } from "@/lib/directions";
+import "./horizontal-scroll.css";
 
-const articles = [
+interface Article {
+  cat: string[];
+  title: string;
+  description: string;
+  location: string;
+  // Google Maps place query for directions from FESTHER. Well-known place
+  // names only — never invented coordinates.
+  destinationQuery: string;
+  // Optional — populated only with verified values. Never invent distances.
+  distance?: string;
+  travelTime?: string;
+  date: string;
+  link: string;
+  imgs: string[];
+}
+
+const articles: Article[] = [
   {
     cat: ["Experiences", "Journeys", "Sri Lanka"],
     title: "Discover the Timeless Beauty of Sri Lanka",
+    description:
+      "Ancient cities, misted hills and golden shores — journey through an island where every road leads somewhere unforgettable.",
+    location: "Cultural Triangle",
+    destinationQuery: "Sigiriya Rock Fortress, Sri Lanka",
     date: "17 Sep 2026",
     link: "/about",
     imgs: [
@@ -20,6 +42,10 @@ const articles = [
   {
     cat: ["Culinary", "Experiences", "Dining"],
     title: "A Taste of Sri Lanka: Flavours Inspired by the Island",
+    description:
+      "From fragrant spices to ocean-fresh catch, savour island flavours thoughtfully crafted into every plate at our table.",
+    location: "Southern Coast",
+    destinationQuery: "Galle Fort, Sri Lanka",
     date: "08 Sep 2026",
     link: "/#dine",
     imgs: [
@@ -31,6 +57,10 @@ const articles = [
   {
     cat: ["Wellbeing", "Wellness", "Experiences"],
     title: "Slow Down, Breathe Deeply and Rediscover Yourself",
+    description:
+      "Quiet mornings, cool highland air and unhurried rituals — space to rest, restore and simply be.",
+    location: "Hill Country",
+    destinationQuery: "Horton Plains National Park, Sri Lanka",
     date: "30 Aug 2026",
     link: "/#experiences",
     imgs: [
@@ -42,17 +72,25 @@ const articles = [
   {
     cat: ["Celebrations", "Weddings", "Experiences"],
     title: "Celebrate Your Story in the Heart of Sri Lanka",
+    description:
+      "Weddings and milestones beneath open skies — gather the people you love for a day that feels entirely yours.",
+    location: "FESTHER Estate",
+    destinationQuery: "Kandy, Sri Lanka",
     date: "18 Aug 2026",
     link: "/#booking",
     imgs: [
        "/edison/edison_1.png",
-      "/edison/edison_2.png",    
+      "/edison/edison_2.png",
       "/edison/edison_3.png",
     ],
   },
   {
     cat: ["Family Travel", "Luxury Stays", "Experiences"],
     title: "Unforgettable Stays Made for Every Kind of Escape",
+    description:
+      "Slow mornings, garden suites and room to roam — stays shaped around families, couples and friends alike.",
+    location: "Ella Highlands",
+    destinationQuery: "Nine Arch Bridge, Ella, Sri Lanka",
     date: "05 Aug 2026",
     link: "/#stay",
     imgs: [
@@ -64,6 +102,10 @@ const articles = [
   {
     cat: ["Nature", "Sustainability", "Wellbeing"],
     title: "Where Nature and Thoughtful Hospitality Come Together",
+    description:
+      "Lush gardens, mindful details and warm welcomes — experience hospitality rooted in the island itself.",
+    location: "Island Gardens",
+    destinationQuery: "Sinharaja Forest Reserve, Sri Lanka",
     date: "22 Jul 2026",
     link: "/#stay",
     imgs: [
@@ -77,19 +119,13 @@ const articles = [
 const press = [
   { key: "conde", logo: "/images/press/conde-nast-traveler.svg", name: "Condé Nast Traveler", note: "The best hotels in Sri Lanka" },
   { key: "destinasian", logo: "/images/press/destinasian.webp", name: "DestinAsian", note: "The pekoe trail with Teardrop Hotels" },
-  { key: "tatler", logo: "/images/press/tatler.svg", name: "Tatler", note: "Travel Awards: Best cultural space 2023" },
-  { key: "cna", logo: "/images/press/cna-luxury.svg", name: "CNA Luxury", note: "The best airport hotel in the world" },
   { key: "wallpaper", logo: "/images/press/wallpaper.svg", name: "Wallpaper*", note: "A remarkable preservation story" },
   { key: "forbes", logo: "/images/press/forbes.svg", name: "Forbes", note: "5 boutique luxury hotels you can't miss in Sri Lanka" },
 ];
 
-const COUNT = press.length;
-const REP = 3;
-const SLIDES = Array.from({ length: REP }, () => press).flat();
 const ARTICLE_AUTO_MS = 6000;
-const SNAP_MS = 600;
-const DRIFT_MS = 3200;
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+const MARQUEE_COPIES = 3;
+const MARQUEE_SECONDS = 32;
 
 function windowCount() {
   if (typeof window === "undefined") return 5;
@@ -104,100 +140,27 @@ function windowCount() {
 export default function PressSection() {
   const [index, setIndex] = useState(0);
   const [perView, setPerView] = useState(5);
-  const [dragging, setDragging] = useState(false);
 
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const initRef = useRef(false);
-  const itemPxRef = useRef(0);
-  const copyPxRef = useRef(0);
-  const velRef = useRef(0);
-  const dragRef = useRef(false);
-  const hoverRef = useRef(false);
-  const startRef = useRef({ x: 0, offset: 0 });
   const swipeX = useRef<number | null>(null);
-  const snapRef = useRef<ReturnType<typeof animate> | null>(null);
-
-  const scroll = useMotionValue(0);
-  const trackX = useTransform(scroll, (v) => -v);
+  const wheelLock = useRef(0);
+  const { ref, dragging, onPointerDown, onPointerMove, endDrag } =
+    useHorizontalScroll();
 
   useEffect(() => {
-    const measure = () => {
-      const p = windowCount();
-      setPerView(p);
-      if (viewportRef.current) {
-        const item = viewportRef.current.clientWidth / p;
-        itemPxRef.current = item;
-        copyPxRef.current = item * COUNT;
-        velRef.current = item / DRIFT_MS;
-        if (!initRef.current) {
-          initRef.current = true;
-          scroll.set(copyPxRef.current);
-        }
-      }
-    };
+    const measure = () => setPerView(windowCount());
     measure();
-    const ro = new ResizeObserver(measure);
-    if (viewportRef.current) ro.observe(viewportRef.current);
     window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [scroll]);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
-  useEffect(() => {
-    let raf = 0;
-    const frame = () => {
-      const s = scroll.get();
-      const cp = copyPxRef.current;
-      if (cp > 0) {
-        if (s >= 2 * cp) scroll.set(s - cp);
-        else if (s < cp) scroll.set(s + cp);
-      }
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, [scroll]);
-
-  useAnimationFrame((_, delta) => {
-    if (hoverRef.current || dragRef.current || snapRef.current) return;
-    scroll.set(scroll.get() + velRef.current * Math.min(delta, 64));
-  });
-
-  const settleTo = useCallback(
-    (steps: number, duration: number) => {
-      const item = itemPxRef.current || 1;
-      const banded = ((steps - COUNT) % COUNT + COUNT) % COUNT + COUNT;
-      const target = banded * item;
-      const done = (controls: ReturnType<typeof animate>) => {
-        if (snapRef.current === controls) {
-          snapRef.current = null;
-          scroll.set(target);
-        }
-      };
-      if (snapRef.current) {
-        const prev = snapRef.current;
-        snapRef.current = null;
-        prev.stop();
-      }
-      const controls = animate(scroll, target, { duration, ease: EASE });
-      snapRef.current = controls;
-      controls.then(() => done(controls));
-    },
-    [scroll],
+  const articlePrev = useCallback(
+    () => setIndex((v) => (v - 1 + articles.length) % articles.length),
+    [],
   );
-
-  const pressStep = useCallback(
-    (delta: number) => {
-      const item = itemPxRef.current || 1;
-      settleTo(Math.round(scroll.get() / item) + delta, SNAP_MS / 1000);
-    },
-    [scroll, settleTo],
+  const articleNext = useCallback(
+    () => setIndex((v) => (v + 1) % articles.length),
+    [],
   );
-
-  const articlePrev = () => setIndex((v) => (v - 1 + articles.length) % articles.length);
-  const articleNext = () => setIndex((v) => (v + 1) % articles.length);
 
   const onArticleDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     swipeX.current = e.clientX;
@@ -211,130 +174,163 @@ export default function PressSection() {
     else if (dx > 54) articlePrev();
   };
 
+  // Touchpad two-finger horizontal swipe navigates the featured article
+  // without hijacking vertical page scroll: only dominant horizontal
+  // deltas trigger navigation, vertical deltas are ignored entirely.
+  const onArticleWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
+    const now = Date.now();
+    if (now - wheelLock.current < 900) return;
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 12) return;
+    wheelLock.current = now;
+    if (e.deltaX > 0) articleNext();
+    else articlePrev();
+  };
+
   useEffect(() => {
     const t = setInterval(() => setIndex((v) => (v + 1) % articles.length), ARTICLE_AUTO_MS);
     return () => clearInterval(t);
   }, [index]);
 
-  const arrowPrev = () => pressStep(-1);
-  const arrowNext = () => pressStep(1);
-
-  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    if (snapRef.current) {
-      snapRef.current.stop();
-      snapRef.current = null;
-    }
-    dragRef.current = true;
-    startRef.current = { x: e.clientX, offset: scroll.get() };
-    setDragging(true);
-    try {
-      viewportRef.current?.setPointerCapture(e.pointerId);
-    } catch {
-      /* noop */
-    }
-  };
-
-  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragRef.current) return;
-    scroll.set(startRef.current.offset - (e.clientX - startRef.current.x));
-  };
-
-  const onPointerUp = () => {
-    if (!dragRef.current) return;
-    dragRef.current = false;
-    const item = itemPxRef.current || 1;
-    const offset = scroll.get();
-    setDragging(false);
-    settleTo(Math.round(offset / item), 0.3);
-  };
+  const goToCategory = useCallback((cat: string) => {
+    const i = articles.findIndex((item) => item.cat.includes(cat));
+    if (i >= 0) setIndex(i);
+  }, []);
 
   const a = articles[index];
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <section className="festher-press" id="press">
+      <div className="press-explore-head">
+        <p className="press-explore-eyebrow">Discover Sri Lanka</p>
+        <h2 className="press-explore-title">Explore Nearby</h2>
+        <p className="press-explore-desc">
+          Discover remarkable attractions, cultural landmarks and scenic destinations within easy reach of
+          FESTHER, perfect for memorable day trips and effortless exploration during your stay.
+        </p>
+      </div>
       <div
         className="press-article"
         onPointerDown={onArticleDown}
         onPointerUp={onArticleUp}
         onPointerCancel={onArticleUp}
-        style={{ touchAction: "pan-y" }}
+        onWheel={onArticleWheel}
+        style={{ touchAction: "pan-x pan-y" }}
       >
         <motion.div
           key={index}
+          className="press-feature-slide"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="article-images">
-            {a.imgs.map((src, i) => (
-              <div key={i} className={`article-image article-image--${i === 0 ? "left" : i === 1 ? "center" : "right"}`}>
-                <img src={src} alt={a.title} draggable={false} />
-              </div>
-            ))}
+          <div className="press-feature-media">
+            <div className="press-media-main">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={a.imgs[0]} alt={a.title} draggable={false} />
+            </div>
+            <div className="press-media-sub">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={a.imgs[1]} alt="" aria-hidden="true" draggable={false} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={a.imgs[2]} alt="" aria-hidden="true" draggable={false} />
+            </div>
           </div>
-          <p className="article-cats">
-            {a.cat.map((c) => (
-              <a key={c} href="#press">
-                {c}
-              </a>
-            ))}
-          </p>
-          <h3>{a.title}</h3>
-          <p className="press-date">{a.date}</p>
-          <Link className="press-read" href={a.link}>
-            Read More
-          </Link>
+          <div className="press-feature-body">
+            <p className="article-cats">
+              {a.cat.map((c) => (
+                <a
+                  key={c}
+                  href="#press"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToCategory(c);
+                  }}
+                >
+                  {c}
+                </a>
+              ))}
+            </p>
+            <h3>{a.title}</h3>
+            <p className="press-desc">{a.description}</p>
+            <p className="press-meta">
+              <span>{a.location}</span>
+              <i aria-hidden="true">•</i>
+              {a.distance && a.travelTime ? (
+                <>
+                  <span>{a.distance} from FESTHER</span>
+                  <i aria-hidden="true">•</i>
+                  <span>Approx. {a.travelTime}</span>
+                  <i aria-hidden="true">•</i>
+                </>
+              ) : null}
+              <span>{a.date}</span>
+            </p>
+            <a
+              className="press-read"
+              href={directionsUrl(a.destinationQuery)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Get directions from FESTHER to ${a.title}`}
+            >
+              Get Directions
+              <span className="press-read-arrow" aria-hidden="true">→</span>
+            </a>
+            <div className="press-nav">
+              <span className="press-count">
+                <strong>{pad(index + 1)}</strong> / {pad(articles.length)}
+              </span>
+              <span className="press-line" aria-hidden="true">
+                <i style={{ width: `${((index + 1) / articles.length) * 100}%` }} />
+              </span>
+              <button className="press-arrow" type="button" aria-label="Previous article" onClick={articlePrev}>
+                ←
+              </button>
+              <button className="press-arrow" type="button" aria-label="Next article" onClick={articleNext}>
+                →
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
 
-      <div className="press-nav">
-        <span className="press-count">
-          <strong>{index + 1}</strong> / {articles.length}
-        </span>
-        <span className="press-line" aria-hidden="true">
-          <i style={{ width: `${((index + 1) / articles.length) * 100}%` }} />
-        </span>
-        <button className="press-arrow" type="button" aria-label="Previous article" onClick={articlePrev}>
-          ←
-        </button>
-        <button className="press-arrow" type="button" aria-label="Next article" onClick={articleNext}>
-          →
-        </button>
-      </div>
-
       <div className="press-carousel">
-        <button className="press-arrow press-arrow--row" type="button" aria-label="Previous publication" onClick={arrowPrev}>
-          ←
-        </button>
         <div
-          className={`press-carousel-viewport${dragging ? " is-dragging" : ""}`}
-          ref={viewportRef}
+          className={`press-carousel-viewport horizontal-scroll${dragging ? " is-dragging" : ""}`}
+          ref={ref}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          onPointerEnter={() => {
-            hoverRef.current = true;
-          }}
-          onPointerLeave={() => {
-            hoverRef.current = false;
-          }}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={endDrag}
         >
-          <motion.div className="press-carousel-track" style={{ x: trackX }}>
-            {SLIDES.map((p, i) => (
-              <div className="press-item" key={`${p.key}-${i}`} style={{ flex: `0 0 ${100 / perView}%` }}>
-                <span className="press-logo-wrapper">
-                  <img className={`press-logo press-logo--${p.key}`} src={p.logo} alt={p.name} draggable={false} />
-                </span>
-                <p>{p.note}</p>
-              </div>
-            ))}
-          </motion.div>
+          <div
+            className="press-carousel-track press-carousel-track--native press-marquee-track"
+            style={
+              {
+                "--marquee-shift": `-${(100 * press.length) / perView}%`,
+                animationDuration: `${MARQUEE_SECONDS}s`,
+              } as CSSProperties
+            }
+          >
+            {Array.from({ length: MARQUEE_COPIES }, () => press)
+              .flat()
+              .map((p, i) => (
+                <div
+                  className="press-item"
+                  key={`${p.key}-${i}`}
+                  aria-hidden={i >= press.length ? true : undefined}
+                  style={{ flex: `0 0 ${100 / perView}%` }}
+                >
+                  <span className="press-logo-wrapper">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img className={`press-logo press-logo--${p.key}`} src={p.logo} alt={p.name} draggable={false} />
+                  </span>
+                  <p>{p.note}</p>
+                </div>
+              ))}
+          </div>
         </div>
-        <button className="press-arrow press-arrow--row" type="button" aria-label="Next publication" onClick={arrowNext}>
-          →
-        </button>
       </div>
     </section>
   );
