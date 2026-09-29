@@ -34,19 +34,27 @@ export default function AboutPreview() {
 
         <div className="about-preview-panel">
           <motion.p className="gold-label" {...rise(0.1)}>
-            About FESTHER
+            Our story
           </motion.p>
           <motion.h2 {...rise(0.18)}>
-            Stylish &amp; Sustainable
-            <br />
-            Sri Lankan Holidays
+            Born in the hills, built around one promise
           </motion.h2>
-          <motion.p className="about-preview-desc" {...rise(0.28)}>
-            FESTHER is a Sri Lankan escape woven around slow mornings, considered detail and genuine warmth. Tucked
-            among gardens and verandas, it brings together thoughtful stays, island dining and quietly memorable
-            experiences — a home for the moments that matter, in the heart of the island.
+          <motion.p className="about-preview-desc" {...rise(0.26)}>
+            FESTHER began in Diyatalawa with a simple idea: celebrations, getaways and journeys should feel connected.
+            Instead of arranging a planner, caterer and driver separately, you can bring every moment together with one
+            team that knows the hills by heart.
           </motion.p>
-          <motion.div {...rise(0.38)}>
+          <motion.p className="about-preview-desc" {...rise(0.32)}>
+            From festivals and events to food, transport, stays and dining, FESTHER brings it all under one name.
+            Today, you can stay at Station Hill, dine with us and explore what&rsquo;s next.
+          </motion.p>
+          <motion.div className="about-preview-quote" {...rise(0.36)}>
+            <blockquote className="about-preview-quote-text">
+              &ldquo;Whatever the letter, the standard is the same &mdash; a moment handled so well that you are
+              free to enjoy it.&rdquo;
+            </blockquote>
+          </motion.div>
+          <motion.div {...rise(0.44)}>
             <Link className="about-preview-cta" href="/about">
               More About Us
             </Link>

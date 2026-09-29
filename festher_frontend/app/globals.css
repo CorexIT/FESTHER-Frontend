@@ -430,6 +430,8 @@ a.fh-contact-row-value:hover{opacity:.6}
 .about-preview-panel .gold-label{margin-bottom:20px}
 .about-preview-panel h2{margin:0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-weight:400;font-size:clamp(28px,2.9vw,44px);line-height:1.18;letter-spacing:3px;text-transform:uppercase;color:var(--ink,#191711)}
 .about-preview-desc{max-width:520px;margin:22px auto 0;font-family:var(--font-poppins),"Poppins",sans-serif;font-size:15px;line-height:1.8;color:#5c5c58;font-weight:400}
+.about-preview-quote{max-width:560px;margin:clamp(28px,3vw,38px) auto 0;padding-top:clamp(24px,2.6vw,30px);border-top:1px solid #E3DECF}
+.about-preview-quote-text{margin:0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(20px,1.9vw,26px);line-height:1.5;color:var(--ink,#191711)}
 .about-preview-cta{display:inline-flex;flex-direction:column;align-items:center;margin-top:30px;font-family:var(--font-poppins),"Poppins",sans-serif;font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--ink,#191711);text-decoration:none;transition:color .3s}
 .about-preview-cta::after{content:"";display:block;width:34px;height:1px;background:var(--gold,#b99455);margin-top:9px;transition:width .4s cubic-bezier(.22,1,.36,1)}
 .about-preview-cta:hover{color:var(--gold,#b99455)}
