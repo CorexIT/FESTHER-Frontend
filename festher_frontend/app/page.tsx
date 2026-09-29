@@ -40,17 +40,19 @@ export default function Home() {
 
     <PressSection />
     <style jsx global>{`
-      .festher-press .article-cats{margin-top:50px}
-      .festher-press .press-article h3{margin-top:50px}
-      .festher-press .press-date{margin-top:28px}
-      .festher-press .press-read{margin-top:38px}
-      .festher-press .press-nav{margin-top:50px}
+      .festher-press .article-cats{margin-top:0}
+      .festher-press .press-article h3{margin-top:20px}
+      .festher-press .press-desc{margin-top:16px}
+      .festher-press .press-meta{margin-top:18px}
+      .festher-press .press-read{margin-top:26px}
+      .festher-press .press-nav{margin-top:30px}
       @media(max-width:700px){
-        .festher-press .article-cats{margin-top:38px}
-        .festher-press .press-article h3{margin-top:42px}
-        .festher-press .press-date{margin-top:26px}
-        .festher-press .press-read{margin-top:34px}
-        .festher-press .press-nav{margin-top:44px}
+        .festher-press .article-cats{margin-top:22px}
+        .festher-press .press-article h3{margin-top:16px}
+        .festher-press .press-desc{margin-top:14px}
+        .festher-press .press-meta{margin-top:16px}
+        .festher-press .press-read{margin-top:22px}
+        .festher-press .press-nav{margin-top:26px}
       }
     `}</style>
 

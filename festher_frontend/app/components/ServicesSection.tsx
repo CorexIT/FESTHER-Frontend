@@ -4,38 +4,54 @@ import Link from "next/link";
 // Photography is reused from the existing FESTHER library (local estate,
 // press and destination images plus the established dining photograph already
 // used across the dining catalogue) — no new artwork is introduced.
+// Routes reuse existing pages (consistent with the main navbar): Food Ordering
+// Service points at the dining page with ordering, Event Management at the
+// existing event catering page.
 const services = [
   {
+    key: "festival",
     title: "Festival",
     href: "/festival",
     src: "/festher-sunset-view.jpg",
     alt: "Guests sharing a golden-hour terrace gathering at FESTHER",
   },
   {
+    key: "event-planning",
     title: "Event Planning",
     href: "/event-planning",
     src: "/edison/edison_1.png",
     alt: "An elegantly arranged celebration space prepared for guests",
   },
   {
-    title: "Buffet Scene",
-    href: "/buffet-scene",
+    key: "food-ordering",
+    title: "Food Ordering Service",
+    href: "/dining",
     src: "/asapuwa/asapuwa_1.jpg",
     alt: "A generous spread of Sri Lankan dishes ready to share",
   },
   {
+    key: "tourism",
     title: "Tourism & Transport",
     href: "/tourism-transport",
     src: "/nine/nine_1.png",
     alt: "A train crossing the Nine Arch Bridge through the Sri Lankan hills",
   },
   {
+    key: "hotel",
     title: "Hotel & Villa",
     href: "/accommodation",
     src: "/festher-hero.jpg",
     alt: "An illuminated villa and garden at dusk",
   },
   {
+    key: "event-management",
+    title: "Event Management",
+    href: "/buffet-scene",
+    src: "/edison/edison_2.png",
+    alt: "A celebration table prepared for a managed event at FESTHER",
+  },
+  {
+    key: "restaurant",
     title: "Restaurant",
     href: "/dining",
     src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&h=1050&q=80",
@@ -58,7 +74,7 @@ export default function ServicesSection() {
 
       <div className="fh-services-grid">
         {services.map((service) => (
-          <Link key={service.title} className="fh-service" href={service.href}>
+          <Link key={service.title} className={`fh-service fh-service--${service.key}`} href={service.href}>
             <img className="fh-service-image" src={service.src} alt={service.alt} loading="lazy" />
             <span className="fh-service-shade" aria-hidden="true" />
             <span className="fh-service-name">
