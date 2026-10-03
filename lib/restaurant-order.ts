@@ -69,18 +69,7 @@ export function orderPayload(request: OrderRequest): OrderRequest {
     specialInstructions: request.specialInstructions?.trim(), orderMethod: request.orderMethod,
     items: request.items.map(({ menuItemId, quantity, notes }) => ({ menuItemId, quantity, notes })),
     offerIds: request.offerIds,
-    ...(request.orderMethod === "ONLINE" && request.billingAddress ? {
-      billingAddress: {
-        address: request.billingAddress.address.trim(), city: request.billingAddress.city.trim(),
-        country: request.billingAddress.country.trim(),
-      },
-    } : {}),
   };
 }
 
-export function paymentView(order: RestaurantOrder): "paid" | "pending" | "failed" {
-  if (order.paymentStatus === "PAID") return "paid";
-  if (order.paymentStatus === "FAILED" || order.paymentStatus === "REFUNDED" ||
-      order.paymentStatus === "UNPAID" || order.orderStatus === "CANCELLED") return "failed";
-  return "pending";
-}
+

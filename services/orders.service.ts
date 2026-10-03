@@ -25,9 +25,7 @@ export function assertOrder(order: RestaurantOrder): RestaurantOrder {
 
 export async function createOrder(request: OrderRequest, idempotencyKey: string): Promise<PreparedOrder> {
   if (!isBackendConfigured()) {
-    // Demo mode: there is no secure backend to sign PayHere values, so an
-    // online payment cannot be started here. No payment is faked.
-    throw new Error("Online card payments require the FESTHER payment service to be connected. Please order via WhatsApp.");
+    throw new Error("Online ordering is not available yet. Please order via WhatsApp.");
   }
   const data = dataOf(await apiRequest<ApiResult<PreparedOrder>>("/api/orders", {
     method: "POST", headers: { "Idempotency-Key": idempotencyKey },
@@ -43,20 +41,6 @@ export async function getOrder(id: string, accessToken: string, signal?: AbortSi
   return assertOrder(dataOf(await apiRequest<ApiResult<{ order: RestaurantOrder }>>(`/api/orders/${encodeURIComponent(id)}`, {
     headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store", signal,
   })).order);
-}
-
-export async function retryOrderPayment(id: string, accessToken: string, key: string): Promise<PreparedOrder> {
-  if (!isBackendConfigured()) {
-    const order = assertOrder(await getRestaurantOrderById(id));
-    // No backend means no freshly-signed PayHere values. Payment stays pending.
-    return { order, accessToken: accessToken || "demo", payment: undefined };
-  }
-  const data = dataOf(await apiRequest<ApiResult<PreparedOrder>>(`/api/orders/${encodeURIComponent(id)}/payment`, {
-    method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Idempotency-Key": key },
-  }));
-  assertOrder(data.order);
-  if (data.order.id !== id) throw new Error("Payment retry did not match your existing order.");
-  return { ...data, accessToken: data.accessToken || accessToken };
 }
 
 // Authentication, authorization, CSRF/origin checks and transitions are enforced by the backend.

@@ -9,7 +9,6 @@ import ReservationModal from "../components/offers/ReservationModal";
 import DishCard from "../components/dining/DishCard";
 import DishModal from "../components/dining/DishModal";
 const CartPanel = dynamic(() => import("../components/dining/CartPanel"), { ssr: false });
-import CheckoutModal from "../components/dining/CheckoutModal";
 import OrderMethodModal from "../components/dining/OrderMethodModal";
 import DiningOfferCard from "../components/dining/DiningOfferCard";
 import DiningOfferModal from "../components/dining/DiningOfferModal";
@@ -57,7 +56,6 @@ export default function DiningPage() {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [methodOpen, setMethodOpen] = useState(false);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 340);
@@ -345,19 +343,6 @@ export default function DiningPage() {
           lines={lines}
           offers={offers}
           onClose={() => setMethodOpen(false)}
-          onCardPayment={() => {
-            setMethodOpen(false);
-            setCheckoutOpen(true);
-          }}
-        />
-      ) : null}
-
-      {checkoutOpen ? (
-        <CheckoutModal
-          lines={lines}
-          offers={offers}
-          onClose={() => setCheckoutOpen(false)}
-          onPlaced={() => setLines([])}
         />
       ) : null}
 

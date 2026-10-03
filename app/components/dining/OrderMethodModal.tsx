@@ -10,10 +10,9 @@ interface OrderMethodModalProps {
   lines: CartLine[];
   offers: Offer[];
   onClose: () => void;
-  onCardPayment: () => void;
 }
 
-export default function OrderMethodModal({ lines, offers, onClose, onCardPayment }: OrderMethodModalProps) {
+export default function OrderMethodModal({ lines, offers, onClose }: OrderMethodModalProps) {
   const summary = summarizeCart(lines, offers);
 
   const openWhatsApp = () => {
@@ -47,7 +46,7 @@ export default function OrderMethodModal({ lines, offers, onClose, onCardPayment
       title="Complete Your Order"
       subtitle="Choose how you would like to place your order."
     >
-      <div className="ck-methods ck-methods--choice">
+      <div className="ck-methods ck-methods--single">
         <button
           type="button"
           className="ck-method"
@@ -62,23 +61,6 @@ export default function OrderMethodModal({ lines, offers, onClose, onCardPayment
           <span className="ck-method-copy">
             <strong>WhatsApp Order</strong>
             <em>Continue on WhatsApp</em>
-          </span>
-          <span className="ck-method-go" aria-hidden="true">
-            →
-          </span>
-        </button>
-
-        <button type="button" className="ck-method ck-method--pay" onClick={onCardPayment}>
-          <span className="ck-method-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="6" width="20" height="13" rx="1" />
-              <line x1="2" y1="10" x2="22" y2="10" />
-              <line x1="6" y1="14.5" x2="10" y2="14.5" />
-            </svg>
-          </span>
-          <span className="ck-method-copy">
-            <strong>Card Payment</strong>
-            <em>Secure card payment powered by PayHere</em>
           </span>
           <span className="ck-method-go" aria-hidden="true">
             →

@@ -23,8 +23,6 @@ const orderStatuses: OrderStatus[] = [
 
 const methodLabels: Record<string, string> = {
   WHATSAPP: "WhatsApp",
-  ONLINE: "Online",
-  PAYHERE: "PayHere",
   UNPAID: "Unpaid",
   PENDING: "Pending",
   PAID: "Paid",
@@ -50,7 +48,7 @@ export default function AdminOrders() {
   const { toast } = useToast();
 
   const [query, setQuery] = useState("");
-  const [filterMethod, setFilterMethod] = useState<"ALL" | "WHATSAPP" | "ONLINE">("ALL");
+  const [filterMethod, setFilterMethod] = useState<"ALL" | "WHATSAPP">("ALL");
   const [savingId, setSavingId] = useState("");
   const [cancelTarget, setCancelTarget] = useState<{ order: RestaurantOrder; next: OrderStatus } | null>(null);
 
@@ -144,11 +142,10 @@ export default function AdminOrders() {
             className="adm-select"
             aria-label="Filter by order method"
             value={filterMethod}
-            onChange={(e) => setFilterMethod(e.target.value as "ALL" | "WHATSAPP" | "ONLINE")}
+            onChange={(e) => setFilterMethod(e.target.value as "ALL" | "WHATSAPP")}
           >
             <option value="ALL">All methods</option>
             <option value="WHATSAPP">WhatsApp</option>
-            <option value="ONLINE">Online</option>
           </select>
         </div>
       </div>
@@ -188,7 +185,7 @@ export default function AdminOrders() {
                 <span className="adm-row-label">Order</span>
                 <span className="adm-offer-name">{o.orderNumber}</span>
                 <span className="adm-offer-type">
-                  {o.orderMethod === "WHATSAPP" ? "WhatsApp" : "PayHere"}
+                  WhatsApp
                 </span>
               </div>
               <div>
@@ -257,7 +254,7 @@ export default function AdminOrders() {
         busy={savingId.length > 0}
         message={
           cancelTarget
-            ? `${cancelTarget.order.orderNumber} from ${cancelTarget.order.customerName} will be marked as CANCELLED. A refund for PayHere orders is handled separately by the payment gateway.`
+            ? `${cancelTarget.order.orderNumber} from ${cancelTarget.order.customerName} will be marked as CANCELLED.`
             : ""
         }
         onCancel={() => !savingId && setCancelTarget(null)}

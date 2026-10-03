@@ -5,7 +5,6 @@ import Modal from "../offers/Modal";
 import Field from "../offers/Field";
 import { formatPrice } from "@/lib/format";
 import { isBackendConfigured } from "@/services/config";
-import { submitPayHereCheckout } from "@/services/payhere";
 import { createOrder } from "@/services/orders.service";
 import { whatsappUrl } from "@/lib/restaurant-config";
 import { orderWhatsAppMessage } from "@/lib/restaurant-order";
@@ -34,7 +33,7 @@ interface OrderCheckoutProps {
 }
 
 type Step = "summary" | "details" | "method";
-type Outcome = "whatsapp" | "online" | "backend-needed" | "error";
+type Outcome = "whatsapp" | "error";
 
 export default function OrderCheckout({
   lines,
@@ -50,8 +49,6 @@ export default function OrderCheckout({
   const [form, setForm] = useState({ customerName: "", email: "", phone: "", notes: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [processing, setProcessing] = useState(false);
-  const [isPayingOnline, setIsPayingOnline] = useState(false);
-  const [payStage, setPayStage] = useState("Preparing payment…");
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [doneOrderNumber, setDoneOrderNumber] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -100,7 +97,6 @@ export default function OrderCheckout({
     if (busy.current) return;
     busy.current = true;
     setProcessing(true);
-    setIsPayingOnline(false);
     setErrorMsg("");
     try {
       const message = orderWhatsAppMessage({ ...orderSummary, ...customer });
@@ -121,7 +117,7 @@ export default function OrderCheckout({
             // Backend unreachable — the WhatsApp message has still been sent.
           }
         } else {
-          const local = buildLocalOrder(lines, customer, "WHATSAPP", "WHATSAPP", totals);
+          const local = buildLocalOrder(lines, customer, "WHATSAPP", totals);
           await recordRestaurantOrder(local);
           ref = local.orderNumber;
           onPlaced(ref);
@@ -139,130 +135,35 @@ export default function OrderCheckout({
     }
   };
 
-  const payOnline = async () => {
-    if (busy.current) return;
-    busy.current = true;
-    setProcessing(true);
-    setIsPayingOnline(true);
-    setPayStage("Preparing payment…");
-    setErrorMsg("");
-    try {
-      const key = getCheckoutKey();
-      const prepared = await createOrder(orderRequest(lines, customer, "ONLINE", offerIds), key);
-      rememberOrderRef(prepared.order.id, prepared.accessToken);
-      if (!prepared.payment) {
-        throw new Error("The payment service did not return secure payment details. No charge was made.");
-      }
-      setPayStage("Redirecting to secure payment…");
-      onPlaced(prepared.order.orderNumber);
-      setDoneOrderNumber(prepared.order.orderNumber);
-      setOutcome("online");
-      setProcessing(false);
-      busy.current = false;
-      // Give the browser a frame to paint the "redirecting" state, then leave.
-      requestAnimationFrame(() => submitPayHereCheckout(prepared.payment as NonNullable<typeof prepared.payment>));
-    } catch (e) {
-      setProcessing(false);
-      setIsPayingOnline(false);
-      busy.current = false;
-      if (!isBackendConfigured()) {
-        // Demo mode: record an honest PENDING order, show clearly that the
-        // secure backend is required, never fake a payment.
-        try {
-          const local = buildLocalOrder(lines, customer, "ONLINE", "PAYHERE", totals);
-          await recordRestaurantOrder(local);
-          setDoneOrderNumber(local.orderNumber);
-          setOutcome("backend-needed");
-          onPlaced(local.orderNumber);
-          return;
-        } catch {
-          // fall through to generic error
-        }
-      }
-      setErrorMsg(e instanceof Error ? e.message : "We could not start secure payment. Please try again.");
-      setOutcome("error");
-    }
-  };
-
   return (
     <Modal onClose={onClose} kicker={kicker} title={title} subtitle={subtitle} wide>
-      {outcome === "whatsapp" || outcome === "backend-needed" ? (
+      {outcome === "whatsapp" ? (
         <div className="ck-result">
           <span className="ck-check" aria-hidden="true">
             ✓
           </span>
-          <h3 className="ck-result-title">
-            {outcome === "whatsapp" ? "Order Requested" : "Online Payment Not Started"}
-          </h3>
+          <h3 className="ck-result-title">Order Requested</h3>
           {doneOrderNumber ? <span className="ck-ref">Order {doneOrderNumber}</span> : null}
-          {outcome === "whatsapp" ? (
-            <p>
-              Your order has been opened in WhatsApp — you can review and send it there.
-              Your order is <b>not</b> confirmed until the restaurant confirms it.
-            </p>
-          ) : (
-            <>
-              <p className="ck-warn">
-                No payment was taken and your card was <b>not</b> charged.
-              </p>
-              <p>
-                PayHere card payments require the FESTHER payment service (backend) to be
-                connected. Your order {doneOrderNumber || ""} is recorded as pending. You can
-                complete it now via WhatsApp, or retry card payment once the payment service
-                is online.
-              </p>
-            </>
-          )}
-          {outcome === "backend-needed" ? (
-            <div className="ck-actions">
-              <button type="button" className="ck-btn ck-btn--wa" onClick={orderViaWhatsApp}>
-                Order via WhatsApp
-              </button>
-              <button type="button" className="ck-btn ck-btn--ghost" onClick={onClose}>
-                Close
-              </button>
-            </div>
-          ) : (
-            <div className="ck-actions">
-              <button type="button" className="ck-btn ck-btn--ghost" onClick={onClose}>
-                Continue
-              </button>
-            </div>
-          )}
-        </div>
-      ) : outcome === "online" ? (
-        <div className="ck-result">
-          <span className="ck-spinner" aria-hidden="true" />
-          <h3 className="ck-result-title">Pay Securely</h3>
-          <p className="ck-processing-text">{payStage}</p>
-          <p className="ck-hint">
-            You are being taken to PayHere&apos;s secure payment page for {doneOrderNumber}.
+          <p>
+            Your order has been opened in WhatsApp — you can review and send it there.
+            Your order is <b>not</b> confirmed until the restaurant confirms it.
           </p>
+          <div className="ck-actions">
+            <button type="button" className="ck-btn ck-btn--ghost" onClick={onClose}>
+              Continue
+            </button>
+          </div>
         </div>
       ) : outcome === "error" ? (
         <div className="ck-result">
           <span className="ck-fail" aria-hidden="true">
             !
           </span>
-          <h3 className="ck-result-title">Payment Not Completed</h3>
+          <h3 className="ck-result-title">Order Not Completed</h3>
           <p className="ck-warn">{errorMsg}</p>
           <div className="ck-actions">
             <button type="button" className="ck-btn ck-btn--wa" onClick={orderViaWhatsApp}>
               Order via WhatsApp
-            </button>
-            <button
-              type="button"
-              className="ck-btn"
-              disabled={processing}
-              onClick={() => {
-                if (isBackendConfigured()) void payOnline();
-                else {
-                  setOutcome(null);
-                  setStep("method");
-                }
-              }}
-            >
-              Try Again
             </button>
             <button type="button" className="ck-btn ck-btn--ghost" onClick={onClose}>
               Close
@@ -388,15 +289,15 @@ export default function OrderCheckout({
         </form>
       ) : (
         <form className="ck-form" noValidate>
-          <h4 className="ck-section">How Would You Like To Order?</h4>
+          <h4 className="ck-section">Complete Your Order</h4>
           {processing ? (
             <div className="ck-processing">
               <span className="ck-spinner" aria-hidden="true" />
-              <p className="ck-processing-text">{isPayingOnline ? payStage : "Opening WhatsApp…"}</p>
+              <p className="ck-processing-text">Opening WhatsApp…</p>
             </div>
           ) : (
             <>
-              <div className="ck-methods">
+              <div className="ck-methods ck-methods--single">
                 <button
                   type="button"
                   className="ck-method"
@@ -416,38 +317,8 @@ export default function OrderCheckout({
                     →
                   </span>
                 </button>
-
-                <div className="ck-or">
-                  <span>OR</span>
-                </div>
-
-                <button
-                  type="button"
-                  className="ck-method ck-method--pay"
-                  onClick={() => void payOnline()}
-                  disabled={processing}
-                >
-                  <span className="ck-method-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="6" width="20" height="13" rx="1" />
-                      <line x1="2" y1="10" x2="22" y2="10" />
-                      <line x1="6" y1="14.5" x2="10" y2="14.5" />
-                    </svg>
-                  </span>
-                  <span className="ck-method-copy">
-                    <strong>Pay Online — Card</strong>
-                    <em>Secure card payment powered by PayHere</em>
-                  </span>
-                  <span className="ck-method-go" aria-hidden="true">
-                    →
-                  </span>
-                </button>
               </div>
-              <p className="ck-methods-note">
-                You will be redirected to PayHere&apos;s secure payment page. Your card is charged
-                only after you confirm the payment.
-              </p>
-              <div className="ck-form-actions ck-form-actions--split">
+              <div className="ck-form-actions">
                 <button type="button" className="ck-btn ck-btn--ghost" onClick={() => setStep("details")}>
                   Back
                 </button>
