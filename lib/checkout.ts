@@ -119,8 +119,7 @@ export function orderAccessToken(orderId: string): string | undefined {
   }
 }
 
-// Local (demo / no-backend) record used to preview the admin panel and the
-// payment status screens. It never marks a PayHere payment as paid.
+// Local (demo / no-backend) record used to preview the admin panel.
 export function localOrderNumber(): string {
   const digits = String(Math.floor(10000 + Math.random() * 89999));
   return `FES-${digits}`;
@@ -130,7 +129,6 @@ export function buildLocalOrder(
   lines: CheckoutLineSpec[],
   customer: CheckoutCustomer,
   orderMethod: RestaurantOrder["orderMethod"],
-  paymentMethod: RestaurantOrder["paymentMethod"],
   totals?: CheckoutTotals,
 ): RestaurantOrder {
   const summary = totals ?? summarizeCheckoutLines(lines);
@@ -147,11 +145,11 @@ export function buildLocalOrder(
     total: summary.total,
     currency: summary.currency,
     orderMethod,
-    paymentMethod,
+    paymentMethod: "WHATSAPP",
     orderStatus: "PENDING",
-    paymentStatus: orderMethod === "WHATSAPP" ? "UNPAID" : "PENDING",
+    paymentStatus: "UNPAID",
     createdAt: new Date().toISOString(),
     version: 1,
-    canRetryPayment: orderMethod === "ONLINE",
+    canRetryPayment: false,
   };
 }

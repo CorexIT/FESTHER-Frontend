@@ -1,4 +1,4 @@
-// Public contact information only. PayHere credentials belong on the backend.
+// Public contact information only.
 export const restaurantConfig = {
   whatsappNumber: (process.env.NEXT_PUBLIC_RESTAURANT_WHATSAPP ?? "").replace(/[\s+()-]/g, ""),
 };

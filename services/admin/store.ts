@@ -139,9 +139,7 @@ export async function listRestaurantOrders(): Promise<RestaurantOrder[]> {
   return [...orders].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
-// Orders recorded while the frontend runs in demo mode (no backend). Payment
-// state is set by verified payment processing only — demo records never mark
-// a PayHere payment as PAID.
+// Orders recorded while the frontend runs in demo mode (no backend).
 export async function recordRestaurantOrder(
   order: RestaurantOrder,
 ): Promise<RestaurantOrder> {

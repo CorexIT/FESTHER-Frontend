@@ -4,10 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
-import { getOrder, retryOrderPayment } from "@/services/orders.service";
-import { paymentView } from "@/lib/restaurant-order";
+import { getOrder } from "@/services/orders.service";
 import { getCheckoutKey, rememberOrderRef } from "@/lib/checkout";
-import { submitPayHereCheckout } from "@/services/payhere";
 import { whatsappUrl } from "@/lib/restaurant-config";
 import { orderWhatsAppMessage } from "@/lib/restaurant-order";
 import type { RestaurantOrder } from "@/lib/types";
@@ -28,24 +26,23 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
   );
   const [order, setOrder] = useState<RestaurantOrder | null>(null);
   const [message, setMessage] = useState("");
-  const [pending, setPending] = useState(false);
 
   const applyResult = useCallback(
     (latest: RestaurantOrder) => {
       setOrder(latest);
-      const state = paymentView(latest);
-      setView(
-        state === "paid" ? "paid" : state === "pending" ? "pending" : mode === "cancel" ? "cancel" : "failed",
-      );
+      const state =
+        latest.paymentStatus === "PAID" ? "paid" :
+        latest.paymentStatus === "FAILED" || latest.paymentStatus === "REFUNDED" ||
+        latest.paymentStatus === "UNPAID" || latest.orderStatus === "CANCELLED" ? "failed" :
+        "pending";
+      setView(state);
     },
-    [mode],
+    [],
   );
 
   const verify = useCallback(
     (signal?: AbortSignal) => {
       if (!orderId || !token) return undefined;
-      // Never trust the return URL — the real status comes from the backend,
-      // which only marks a payment PAID after server-side verification.
       return getOrder(orderId, token, signal)
         .then((latest) => {
           if (signal?.aborted) return undefined;
@@ -53,7 +50,7 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
         })
         .catch((e) => {
           if (signal?.aborted) return undefined;
-          setMessage(e instanceof Error ? e.message : "We could not verify your payment status right now.");
+          setMessage(e instanceof Error ? e.message : "We could not verify your order status right now.");
           setView("error");
         });
     },
@@ -66,27 +63,6 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
     void verify(controller.signal);
     return () => controller.abort();
   }, [orderId, token, verify]);
-
-  const retry = async () => {
-    if (!order || !token || pending) return;
-    setPending(true);
-    setMessage("");
-    try {
-      const prepared = await retryOrderPayment(order.id, token, getCheckoutKey());
-      if (prepared.payment) {
-        rememberOrderRef(prepared.order.id, prepared.accessToken);
-        submitPayHereCheckout(prepared.payment);
-      } else {
-        setMessage(
-          "Secure card payment needs the FESTHER payment service to be connected. Your order has not been charged — you can complete it via WhatsApp.",
-        );
-      }
-    } catch (e) {
-      setMessage(e instanceof Error ? e.message : "We could not start your payment again. Please try once more.");
-    } finally {
-      setPending(false);
-    }
-  };
 
   const viaWhatsApp = () => {
     if (!order) return;
@@ -105,15 +81,15 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
         {view === "verifying" ? (
           <div className="ph-panel">
             <span className="ph-spinner" aria-hidden="true" />
-            <h1 className="ph-title">Verifying Your Payment…</h1>
-            <p className="ph-sub">Please wait while we confirm your payment with PayHere.</p>
+            <h1 className="ph-title">Verifying Your Order…</h1>
+            <p className="ph-sub">Please wait while we confirm your order status.</p>
           </div>
         ) : view === "paid" ? (
           <div className="ph-panel">
             <span className="ph-mark ph-mark--ok" aria-hidden="true">
               ✓
             </span>
-            <h1 className="ph-title">Payment Successful</h1>
+            <h1 className="ph-title">Order Confirmed</h1>
             {order ? <span className="ph-ref">Order {order.orderNumber}</span> : null}
             <p className="ph-sub">
               Thank you, {order?.customerName.split(" ")[0] ?? "friend"}. Your restaurant order has been
@@ -128,9 +104,9 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
         ) : view === "pending" ? (
           <div className="ph-panel">
             <span className="ph-spinner" aria-hidden="true" />
-            <h1 className="ph-title">Payment Processing</h1>
+            <h1 className="ph-title">Order Processing</h1>
             <p className="ph-sub">
-              We are confirming your payment with PayHere. Please do not submit another payment —
+              We are confirming your order. Please do not submit another order —
               your order {order?.orderNumber ?? ""} is safely recorded.
             </p>
             <div className="ph-actions">
@@ -148,16 +124,13 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
             <span className="ph-mark ph-mark--no" aria-hidden="true">
               !
             </span>
-            <h1 className="ph-title">Payment Not Completed</h1>
+            <h1 className="ph-title">Order Not Completed</h1>
             <p className="ph-sub">
-              Your payment did not go through — no money has been taken. You can try again or complete
+              Your order could not be completed. You can try again or complete
               your order via WhatsApp.
             </p>
             {order ? <span className="ph-ref">Order {order.orderNumber}</span> : null}
             <div className="ph-actions">
-              <button type="button" className="ph-btn" onClick={retry} disabled={pending}>
-                {pending ? "Working…" : "Try Again"}
-              </button>
               <button type="button" className="ph-btn ph-btn--ghost" onClick={viaWhatsApp}>
                 Order via WhatsApp
               </button>
@@ -169,16 +142,12 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
             <span className="ph-mark ph-mark--no" aria-hidden="true">
               ✕
             </span>
-            <h1 className="ph-title">Payment Cancelled</h1>
+            <h1 className="ph-title">Order Cancelled</h1>
             <p className="ph-sub">
-              You cancelled the payment — no money has been taken. Your order stays open; you can try
-              again or complete it via WhatsApp.
+              You cancelled this order. Your order stays open; you can complete it via WhatsApp.
             </p>
             {order ? <span className="ph-ref">Order {order.orderNumber}</span> : null}
             <div className="ph-actions">
-              <button type="button" className="ph-btn" onClick={retry} disabled={pending}>
-                {pending ? "Working…" : "Try Again"}
-              </button>
               <button type="button" className="ph-btn ph-btn--ghost" onClick={viaWhatsApp}>
                 Order via WhatsApp
               </button>
@@ -188,11 +157,10 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
         ) : view === "missing" ? (
           <div className="ph-panel">
             <h1 className="ph-title">
-              {mode === "cancel" ? "Payment Cancelled" : "Payment Status"}
+              {mode === "cancel" ? "Order Cancelled" : "Order Status"}
             </h1>
             <p className="ph-sub">
-              We could not find an order reference in this link. Your payment is always verified against
-              the FESTHER service before we can confirm it.
+              We could not find an order reference in this link. Please place a new order via WhatsApp.
             </p>
             <div className="ph-actions">
               <Link className="ph-btn" href="/dining">
@@ -209,7 +177,7 @@ export default function PaymentStatusView({ mode }: PaymentStatusViewProps) {
               !
             </span>
             <h1 className="ph-title">Unable to Verify</h1>
-            <p className="ph-sub">{message || "We could not verify your payment status."}</p>
+            <p className="ph-sub">{message || "We could not verify your order status."}</p>
             <div className="ph-actions">
               <button type="button" className="ph-btn" onClick={() => void verify()}>
                 Check Again
