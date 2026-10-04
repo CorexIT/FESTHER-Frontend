@@ -164,7 +164,7 @@ export interface GuestReview {
   name: string;
   email?: string;
   country?: string;
-  rating: number;
+  rating?: number;
   comment: string;
   status: ReviewStatus;
   active?: boolean;
