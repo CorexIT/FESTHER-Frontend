@@ -8,7 +8,7 @@ import BookingModal from "../components/offers/BookingModal";
 import ReservationModal from "../components/offers/ReservationModal";
 import OrderModal from "../components/offers/OrderModal";
 import PackageDetailsModal from "../components/offers/PackageDetailsModal";
-import { getOffers } from "@/services/offers.service";
+import { getPackages } from "@/services/packages.service";
 import { getAccommodations } from "@/services/accommodations.service";
 import { getDiningItems } from "@/services/dining.service";
 import type { Accommodation, DiningItem, Offer } from "@/lib/types";
@@ -51,9 +51,9 @@ export default function PackagesPage() {
       setStatus("loading");
       setError("");
       try {
-        const [o, a, d] = await Promise.all([getOffers(), getAccommodations(), getDiningItems()]);
+        const [p, a, d] = await Promise.all([getPackages(), getAccommodations(), getDiningItems()]);
         if (cancelled) return;
-        setOffers(o.filter((offer) => offer.type === "PACKAGE"));
+        setOffers(p);
         setAccommodations(a);
         setDiningItems(d);
         setStatus("ready");
