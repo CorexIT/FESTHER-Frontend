@@ -8,6 +8,7 @@ import BookingModal from "../../components/offers/BookingModal";
 import { AmenityIcon } from "../../components/AccommodationIcons";
 import { getAccommodationBySlug } from "@/services/accommodations.service";
 import type { Accommodation } from "@/lib/types";
+import { formatPrice } from "@/lib/format";
 import "../../offers.css";
 import "../../accommodation.css";
 
@@ -55,7 +56,9 @@ export default function AccommodationDetailPage() {
 
   const metaRows = (): [string, string][] => {
     if (!room) return [];
-    const rows: [string, string][] = [["Room size", room.roomSize]];
+    const rows: [string, string][] = [["Room type", room.roomSize]];
+    const price = formatPrice(room.price, room.currency);
+    if (price) rows.push(["Price", `${price} per night`]);
     if (room.capacity) rows.push(["Sleeps", `Up to ${room.capacity} guests`]);
     if (room.bedType) rows.push(["Bed", room.bedType]);
     return rows;
@@ -164,7 +167,7 @@ export default function AccommodationDetailPage() {
               <p className="accd-kicker">Overview</p>
               <div className="accd-meta-rows">
                 {metaRows().map(([label, value]) => (
-                  <div className="accd-meta-row" key={label}>
+                  <div className={`accd-meta-row${label === "Price" ? " accd-meta-row--price" : ""}`} key={label}>
                     <span>{label}</span>
                     <strong>{value}</strong>
                   </div>

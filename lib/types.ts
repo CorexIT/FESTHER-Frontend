@@ -26,6 +26,8 @@ export interface Accommodation {
   id: string;
   slug: string;
   name: string;
+  price?: number;
+  currency?: string;
   roomSize: string;
   shortDescription: string;
   fullDescription: string;
