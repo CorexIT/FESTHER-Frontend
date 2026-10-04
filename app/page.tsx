@@ -24,9 +24,9 @@ export default function Home() {
       <div className="editorial-slides"><AnimatePresence mode="sync">{slides.map((src, i) => i === slide && <motion.div key={src} className="editorial-slide" style={{ backgroundImage: `url(${src})` }} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1.09 }} exit={{ opacity: 0 }} transition={{ opacity: { duration: 1.2 }, scale: { duration: 7 } }} />)}</AnimatePresence></div>
       <Navbar />
       <div className="hero-editorial-copy">
-        <p className="gold-label">A Sri Lankan hospitality experience</p>
+        <p className="gold-label">HOSPITALITY • DINING • CELEBRATIONS</p>
         <h1>Stay awhile.<br/><em>Celebrate everything.</em></h1>
-        <div className="hero-editorial-bottom"><p>Thoughtful stays, memorable dining and beautifully considered experiences — brought together in one place.</p><a href="#story">Discover FESTHER <span>↓</span></a></div>
+        <div className="hero-editorial-bottom"><p>Experience the warmth of Sri Lankan hospitality through thoughtful stays, memorable dining and beautifully considered celebrations — all brought together in one place.</p><a href="#story">Discover FESTHER <span>↓</span></a></div>
       </div>
       <div className="editorial-pager"><button onClick={previous}>←</button><span>0{slide + 1}</span><i/><span>0{slides.length}</span><button onClick={next}>→</button></div>
     </section>
