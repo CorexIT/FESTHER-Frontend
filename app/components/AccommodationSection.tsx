@@ -100,7 +100,21 @@ export default function AccommodationSection() {
         </Link>
       </div>
 
-      {status === "loading" ? <p className="of-state">Loading accommodation…</p> : null}
+      {status === "loading" ? (
+        <div className="acc-loading" role="status" aria-live="polite" aria-label="Loading accommodations">
+          <p className="acc-loading-label">Loading accommodations…</p>
+          <div className="acc-loading-track" aria-hidden="true">
+            {[0, 1, 2].map((item) => (
+              <div className="acc-loading-card" key={item}>
+                <span className="acc-loading-image" />
+                <span className="acc-loading-line acc-loading-line--title" />
+                <span className="acc-loading-line" />
+                <span className="acc-loading-line acc-loading-line--short" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {status === "error" ? <p className="of-state of-error-banner">{error}</p> : null}
       {status === "ready" ? <div
         ref={ref}

@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 
 const ACCOMMODATIONS_URL = "https://fester-backend.vercel.app/api/v1/accommodations";
 
+export const revalidate = 60;
+
 export async function GET() {
   try {
     const response = await fetch(ACCOMMODATIONS_URL, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(10000),
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
     const body = await response.json().catch(() => null);
 
