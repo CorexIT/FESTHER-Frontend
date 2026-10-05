@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { effectiveDiscount, formatPrice } from "@/lib/format";
+import { effectiveDiscount, formatDateLabel, formatPrice } from "@/lib/format";
 import type { Offer } from "@/lib/types";
 
 interface OfferCardProps {
@@ -84,7 +84,7 @@ export default function OfferCard({ offer, onBook, onReserve, onOrder, onViewPac
         ) : null}
         {offer.startDate && offer.endDate ? (
           <p className="of-card-dates">
-            Valid {offer.startDate.replaceAll("-", ".")} — {offer.endDate.replaceAll("-", ".")}
+            Valid {formatDateLabel(offer.startDate)} — {formatDateLabel(offer.endDate)}
           </p>
         ) : null}
         <div className="of-card-actions">

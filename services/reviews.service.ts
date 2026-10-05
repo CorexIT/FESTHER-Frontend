@@ -1,41 +1,34 @@
 import type { ApiResult, GuestReview } from "@/lib/types";
-import { getComments } from "@/services/admin/comments.service";
-import { apiRequest, apiItems, delay, isBackendConfigured } from "./config";
+import { apiRequest } from "./config";
 
-import type { ReviewComment } from "./admin/comments.service";
+interface FeedbackApiRecord {
+  id: string;
+  customerName: string;
+  feedback: string;
+  createdAt: string;
+}
 
-function toGuestReview(c: ReviewComment): GuestReview {
-  const status: GuestReview["status"] =
-    c.status === "approved" ? "APPROVED" : c.status === "pending" ? "PENDING" : "REJECTED";
+function toGuestReview(feedback: FeedbackApiRecord): GuestReview {
   return {
-    id: c.id,
-    name: c.name,
-    rating: c.rating,
-    comment: c.comment,
-    status,
-    active: c.active,
-    createdAt: c.date,
+    id: feedback.id,
+    name: feedback.customerName,
+    comment: feedback.feedback,
+    status: "APPROVED",
+    active: true,
+    createdAt: feedback.createdAt,
   };
 }
 
 export async function getApprovedReviews(): Promise<GuestReview[]> {
-  if (!isBackendConfigured()) {
-    await delay(350);
-    const all = await getComments();
-    return all
-      .filter(
-        (c) =>
-          c.status === "approved" &&
-          c.active !== false &&
-          c.name.trim().length > 0 &&
-          c.comment.trim().length > 0 &&
-          c.rating >= 1 &&
-          c.rating <= 5
-      )
-      .map(toGuestReview);
-  }
-  const result = await apiRequest<ApiResult<{ items: GuestReview[] }>>("/api/reviews?status=APPROVED&active=true");
-  return apiItems(result).filter((r) => r != null && r.status === "APPROVED" && r.active !== false &&
-    typeof r.name === "string" && typeof r.comment === "string" &&
-    Number.isFinite(r.rating) && r.rating >= 1 && r.rating <= 5);
+  const result = await apiRequest<ApiResult<FeedbackApiRecord[]>>("/api/feedbacks");
+  return (Array.isArray(result?.data) ? result.data : [])
+    .filter(
+      (feedback) =>
+        feedback &&
+        typeof feedback.customerName === "string" &&
+        feedback.customerName.trim().length > 0 &&
+        typeof feedback.feedback === "string" &&
+        feedback.feedback.trim().length > 0,
+    )
+    .map(toGuestReview);
 }
