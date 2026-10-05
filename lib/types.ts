@@ -26,6 +26,8 @@ export interface Accommodation {
   id: string;
   slug: string;
   name: string;
+  price?: number;
+  currency?: string;
   roomSize: string;
   shortDescription: string;
   fullDescription: string;
@@ -162,7 +164,7 @@ export interface GuestReview {
   name: string;
   email?: string;
   country?: string;
-  rating: number;
+  rating?: number;
   comment: string;
   status: ReviewStatus;
   active?: boolean;

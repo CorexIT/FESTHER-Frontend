@@ -282,7 +282,7 @@ export default function Navbar() {
       <div className="fh-nav-inner">
         <div className="fh-nav-left">
           <Link className="fh-nav-brand" href="/" aria-label="FESTHER — home">
-            <span className="fh-nav-brand-name">FESTHR</span>
+            <span className="fh-nav-brand-name">FESTHER</span>
             <span className="fh-nav-brand-sub">Sri Lanka</span>
           </Link>
         </div>
