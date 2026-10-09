@@ -25,8 +25,8 @@ export default function AboutPreview() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/boburu/boburu_2.jpg"
-            alt="FESTHER — quiet corners set among the Sri Lankan landscape"
+            src="/abotpage.png"
+            alt="FESTHER hospitality, celebrations, delicious food and scenic stays at Station Hill"
             loading="lazy"
             decoding="async"
           />
@@ -37,16 +37,29 @@ export default function AboutPreview() {
             About FESTHER
           </motion.p>
           <motion.h2 {...rise(0.18)}>
-            Stylish &amp; Sustainable
-            <br />
-            Sri Lankan Holidays
+            Inspired by your dreams, designed for your moments
           </motion.h2>
-          <motion.p className="about-preview-desc" {...rise(0.28)}>
-            FESTHER is a Sri Lankan escape woven around slow mornings, considered detail and genuine warmth. Tucked
-            among gardens and verandas, it brings together thoughtful stays, island dining and quietly memorable
-            experiences — a home for the moments that matter, in the heart of the island.
+          <motion.p className="about-preview-desc" {...rise(0.26)}>
+            At FESTHER, we bring your dreams to life through creative event planning, warm hospitality, delicious
+            dining and memorable journeys.
           </motion.p>
-          <motion.div {...rise(0.38)}>
+          <motion.p className="about-preview-desc" {...rise(0.32)}>
+            From intimate gatherings to grand celebrations, we add a personal touch to every detail. Unwind, dine and
+            celebrate at StationHill Hotel &amp; Resort, nestled in the misty hills of Diyathalawa.
+          </motion.p>
+          <motion.p className="about-preview-desc" {...rise(0.36)}>
+            Let&rsquo;s create moments you&rsquo;ll love to remember.
+          </motion.p>
+          <motion.p className="about-preview-desc" {...rise(0.4)}>
+            <strong>FESTHER &mdash; Every Moment, A Celebration!</strong>
+          </motion.p>
+          <motion.div className="about-preview-quote" {...rise(0.44)}>
+            <blockquote className="about-preview-quote-text">
+              &ldquo;Your dream inspires our design &mdash; every detail cared for, every moment yours to
+              enjoy.&rdquo;
+            </blockquote>
+          </motion.div>
+          <motion.div {...rise(0.44)}>
             <Link className="about-preview-cta" href="/about">
               More About Us
             </Link>
