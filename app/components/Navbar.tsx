@@ -2,7 +2,9 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import footerLogo from "@/public/f.png";
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -17,7 +19,7 @@ const serviceLinks = [
   { label: "Event Planning", href: "/event-planning" },
   { label: "Food Ordering Service", href: "/dining" },
   { label: "Tourism & Transport", href: "/tourism-transport" },
-  { label: "Hotel & Villa", href: "/accommodation" },
+  { label: "Hotel & Resort", href: "/accommodation" },
   { label: "Event Management", href: "/buffet-scene" },
   { label: "Restaurant", href: "/dining" },
 ];
@@ -281,6 +283,13 @@ export default function Navbar() {
     >
       <div className="fh-nav-inner">
         <div className="fh-nav-left">
+          <Image
+            src={footerLogo}
+            width={40}
+            height={40}
+            alt="FESTHER logo"
+            unoptimized
+          />
           <Link className="fh-nav-brand" href="/" aria-label="FESTHER — home">
             <span className="fh-nav-brand-name">FESTHER</span>
             <span className="fh-nav-brand-sub">Sri Lanka</span>

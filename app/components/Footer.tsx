@@ -19,7 +19,7 @@ const experienceLinks = [
   { label: "Event Planning", href: null },
   { label: "Buffet Scene", href: null },
   { label: "Tourism & Transport", href: null },
-  { label: "Hotel & Villa", href: "/#stay" },
+  { label: "Hotel & Resort", href: "/#stay" },
   { label: "Restaurant", href: "/#dining" },
 ];
 
