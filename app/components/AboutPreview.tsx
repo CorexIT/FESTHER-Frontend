@@ -37,7 +37,7 @@ export default function AboutPreview() {
             About FESTHER
           </motion.p>
           <motion.h2 {...rise(0.18)}>
-            Inspired by your dreams, designed for your moments
+            Bringing Dreams to Life.
           </motion.h2>
           <motion.p className="about-preview-desc" {...rise(0.26)}>
             At FESTHER, we bring your dreams to life through creative event planning, warm hospitality, delicious
