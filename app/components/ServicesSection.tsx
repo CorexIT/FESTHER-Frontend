@@ -38,7 +38,7 @@ const services = [
   },
   {
     key: "hotel",
-    title: "Hotel & Villa",
+    title: "Hotel & Resort",
     href: "/accommodation",
     src: "/festher-hero.jpg",
     alt: "An illuminated villa and garden at dusk",
