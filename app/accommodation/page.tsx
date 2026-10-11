@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import BookingModal from "../components/offers/BookingModal";
+import StationHillIntro from "../components/StationHillIntro";
 import { getAccommodations } from "@/services/accommodations.service";
 import type { Accommodation } from "@/lib/types";
 import "../offers.css";
@@ -49,7 +50,10 @@ export default function AccommodationListingPage() {
       <section className="fg-hero">
         <Navbar />
         <img src="/festher-hero.jpg" alt="FESTHER — accommodation at golden hour" />
-        <h1>Accommodation</h1>
+        <div className="sh-hero-caption">
+          <h1>StationHill Hotel &amp; Resort</h1>
+          <p className="sh-hero-sub">Diyathalawa</p>
+        </div>
       </section>
 
       <section className="fg-head">
@@ -58,6 +62,11 @@ export default function AccommodationListingPage() {
           <span aria-hidden="true">•</span>
           <span>Accommodation</span>
         </nav>
+      </section>
+
+      <StationHillIntro />
+
+      <section className="fg-head">
         <p className="of-tagline">Rooms made for slow stays.</p>
         <p className="of-intro">
           Four distinct stays across the estate — garden, family, deluxe and premier — each with its own character,
