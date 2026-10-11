@@ -193,6 +193,7 @@ a.fh-contact-row-value:hover{opacity:.6}
 .fh-contact-item{margin:2px 0 26px}
 .fh-contact-label{display:block;margin-bottom:6px;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .fh-contact-value{display:block;font-size:15px;font-weight:400;line-height:1.6;color:#fff}
+.fh-contact-value--wrap{overflow-wrap:anywhere;word-break:normal}
 .fh-contact-value--muted{color:rgba(255,255,255,.82)}
 .fh-newsletter{max-width:300px}
 .fh-newsletter p{margin:2px 0 26px;font-size:11px;font-weight:300;line-height:1.7;color:rgba(255,255,255,.8)}
@@ -240,6 +241,10 @@ a.fh-contact-row-value:hover{opacity:.6}
 .fh-footer a.fh-contact-value:hover{color:var(--gold,#b99455)}
 @media(max-width:1024px){.fh-footer-top{padding:56px 5vw 50px}.fh-footer-grid{grid-template-columns:1fr 1fr;gap:44px}.fh-footer-brand-col{grid-column:1/-1}}
 @media(max-width:700px){.fh-footer-top{padding:52px 22px 46px}.fh-footer-grid{grid-template-columns:1fr;gap:40px}.fh-footer-brand{font-size:32px}.fh-footer-bottom{padding:28px 22px 30px}.fh-footer-legals{flex-wrap:wrap;justify-content:center;gap:10px}}
+
+/* StationHill Hotel & Resort footer branding — scoped to /accommodation only */
+.fh-footer-brand--stationhill{font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-size:clamp(26px,2.4vw,34px);font-weight:500;letter-spacing:.08em;line-height:1.25}
+.fh-footer-logo--stationhill{width:clamp(124px,11.5vw,168px);margin-top:16px}
 
 /* ============ FEATURED STORY / ARTICLE SLIDER ============ */
 :root{--fh-ink:#414141;--fh-sub:#666666;--fh-hairline:#DEDEDE;--fh-serif:var(--font-serif),Didot,"Bodoni MT",Georgia,"Times New Roman",serif}

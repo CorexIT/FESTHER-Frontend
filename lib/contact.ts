@@ -8,19 +8,16 @@
  * a contact row (or a map) automatically once a value is filled in.
  */
 
-export const WHATSAPP_NUMBER = "9476342913";
+export const WHATSAPP_NUMBER = "94778540015";
 
-export const WHATSAPP_DISPLAY = "076 343 2913";
+export const WHATSAPP_DISPLAY = "077 854 0015";
 
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 export const CONTACT_INFO = {
-  /** Replace with the real FESTHR address, e.g. "123 Temple Road, Galle 80000". */
-  address: "ADD FESTHR ADDRESS",
-  /** Replace with the reservations phone number, digits and spaces are fine. */
-  phone: "ADD PHONE NUMBER",
-  /** Replace with the FESTHR email address. */
-  email: "ADD EMAIL ADDRESS",
+  address: "FESTHER, Near Government B Holiday Bungalow, Diyathalawa, Sri Lanka",
+  phone: "076 523 6340",
+  email: "Infor@festherlk.com",
   whatsapp: WHATSAPP_DISPLAY,
 } as const;
 
