@@ -38,7 +38,7 @@ export const accommodations: Accommodation[] = [
       "Breakfast served on the verandah each morning",
     ],
     details: [
-      ["Room size", "55 sqm"],
+      ["Room type", "55 sqm"],
       ["Sleeps", "Up to 2 guests"],
       ["Bed", "King-size four-poster"],
       ["Check-in / Check-out", "14:00 / 11:00"],
@@ -75,7 +75,7 @@ export const accommodations: Accommodation[] = [
       "Mid-day replenishment and child-friendly extras on request",
     ],
     details: [
-      ["Room size", "65 sqm"],
+      ["Room type", "65 sqm"],
       ["Sleeps", "Up to 4 guests"],
       ["Bed", "King + twin"],
       ["Check-in / Check-out", "14:00 / 11:00"],
@@ -112,7 +112,7 @@ export const accommodations: Accommodation[] = [
       "Rainfall shower with island toiletries",
     ],
     details: [
-      ["Room size", "45 sqm"],
+      ["Room type", "45 sqm"],
       ["Sleeps", "Up to 2 guests"],
       ["Bed", "King-size"],
       ["Check-in / Check-out", "14:00 / 11:00"],
@@ -149,7 +149,7 @@ export const accommodations: Accommodation[] = [
       "Dedicated butler-style service",
     ],
     details: [
-      ["Room size", "70 sqm"],
+      ["Room type", "70 sqm"],
       ["Sleeps", "Up to 3 guests"],
       ["Bed", "King + sofa bed"],
       ["Check-in / Check-out", "14:00 / 11:00"],

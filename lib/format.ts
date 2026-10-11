@@ -6,6 +6,10 @@ export function formatPrice(n?: number, currency?: string): string | null {
   return `${cur} ${n.toLocaleString("en-US")}`;
 }
 
+export function formatDateLabel(date: string): string {
+  return date.slice(0, 10).replaceAll("-", ".");
+}
+
 export function effectiveDiscount(offer: Offer): number | undefined {
   if (offer.discountPercentage != null) return offer.discountPercentage;
   if (offer.offerPrice != null && offer.originalPrice != null && offer.originalPrice > 0) {

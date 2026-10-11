@@ -3,14 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { accommodations } from "@/lib/data/accommodations";
 import type { Accommodation } from "@/lib/types";
+import { getAccommodations } from "@/services/accommodations.service";
+import { formatPrice } from "@/lib/format";
 import { Icons } from "./AccommodationIcons";
 import BookingModal from "./offers/BookingModal";
 import { useHorizontalScroll } from "./useHorizontalScroll";
 import "./horizontal-scroll.css";
-
-const rooms = accommodations.slice(0, 4);
 
 function slideStep(viewport: HTMLElement | null): number {
   if (!viewport) return 320;
@@ -21,6 +20,9 @@ function slideStep(viewport: HTMLElement | null): number {
 }
 
 export default function AccommodationSection() {
+  const [rooms, setRooms] = useState<Accommodation[]>([]);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [error, setError] = useState("");
   const [booking, setBooking] = useState<Accommodation | null>(null);
   const [page, setPage] = useState(1);
   const { ref, dragging, prev, next, onPointerDown, onPointerMove, endDrag } =
@@ -33,7 +35,25 @@ export default function AccommodationSection() {
     if (!step) return;
     const i = Math.round(el.scrollLeft / step);
     setPage(Math.min(Math.max(i + 1, 1), rooms.length));
-  }, [ref]);
+  }, [ref, rooms.length]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAccommodations()
+      .then((data) => {
+        if (cancelled) return;
+        setRooms(data);
+        setStatus("ready");
+      })
+      .catch((reason: unknown) => {
+        if (cancelled) return;
+        setError(reason instanceof Error ? reason.message : "We could not load accommodation.");
+        setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     updatePage();
@@ -80,7 +100,23 @@ export default function AccommodationSection() {
         </Link>
       </div>
 
-      <div
+      {status === "loading" ? (
+        <div className="acc-loading" role="status" aria-live="polite" aria-label="Loading accommodations">
+          <p className="acc-loading-label">Loading accommodations…</p>
+          <div className="acc-loading-track" aria-hidden="true">
+            {[0, 1, 2].map((item) => (
+              <div className="acc-loading-card" key={item}>
+                <span className="acc-loading-image" />
+                <span className="acc-loading-line acc-loading-line--title" />
+                <span className="acc-loading-line" />
+                <span className="acc-loading-line acc-loading-line--short" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {status === "error" ? <p className="of-state of-error-banner">{error}</p> : null}
+      {status === "ready" ? <div
         ref={ref}
         className={`acc-viewport horizontal-scroll horizontal-scroll--snap${dragging ? " is-dragging" : ""}`}
         onScroll={updatePage}
@@ -112,7 +148,10 @@ export default function AccommodationSection() {
                 <h3 className="acc-room-title">
                   <Link href={href}>{room.name}</Link>
                 </h3>
-                <p className="acc-room-size">Room Size: {room.roomSize}</p>
+                <p className="acc-room-size">Room Type: {room.roomSize}</p>
+                {formatPrice(room.price, room.currency) ? (
+                  <p className="acc-room-price">{formatPrice(room.price, room.currency)} per night</p>
+                ) : null}
                 <p className="acc-room-desc">{room.shortDescription}</p>
                 <div className="acc-actions">
                   <Link className="acc-action" href={href}>
@@ -140,9 +179,9 @@ export default function AccommodationSection() {
             </article>
           );
         })}
-      </div>
+      </div> : null}
 
-      <div className="acc-nav">
+      {rooms.length > 0 ? <div className="acc-nav">
         <button type="button" className="acc-arrow" onClick={goPrev} aria-label="Previous accommodation">
           ←
         </button>
@@ -152,7 +191,7 @@ export default function AccommodationSection() {
         <button type="button" className="acc-arrow" onClick={goNext} aria-label="Next accommodation">
           →
         </button>
-      </div>
+      </div> : null}
 
       {booking ? (
         <BookingModal

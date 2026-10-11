@@ -7,6 +7,7 @@ import BookingModal from "../components/offers/BookingModal";
 import StationHillIntro from "../components/StationHillIntro";
 import { getAccommodations } from "@/services/accommodations.service";
 import type { Accommodation } from "@/lib/types";
+import { formatPrice } from "@/lib/format";
 import "../offers.css";
 import "../accommodation.css";
 
@@ -108,6 +109,9 @@ export default function AccommodationListingPage() {
                     {room.capacity ? <span>Sleeps {room.capacity}</span> : null}
                     {room.bedType ? <span>{room.bedType}</span> : null}
                   </p>
+                  {formatPrice(room.price, room.currency) ? (
+                    <p className="accp-card-price">{formatPrice(room.price, room.currency)} per night</p>
+                  ) : null}
                   <div className="of-card-actions">
                     <Link href={href} className="of-btn of-btn--block">
                       Explore
