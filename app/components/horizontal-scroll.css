@@ -38,21 +38,6 @@
    The legacy styles used overflow:hidden + JS-driven transforms, which
    blocked native touchpad gestures. These overrides restore native
    scrolling while keeping every visual rule (sizes, gaps, padding). */
-.acc-viewport.horizontal-scroll {
-  display: flex;
-  align-items: center;
-  gap: clamp(24px, 3vw, 44px);
-  overflow-x: auto;
-  overflow-y: hidden;
-  touch-action: pan-x pan-y;
-  cursor: grab;
-}
-@media (max-width: 700px) {
-  .acc-viewport.horizontal-scroll {
-    gap: 20px;
-  }
-}
-
 .gr-viewport.horizontal-scroll,
 .press-carousel-viewport.horizontal-scroll {
   overflow-x: auto;
