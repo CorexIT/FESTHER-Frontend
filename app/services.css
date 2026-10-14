@@ -24,6 +24,17 @@
 .service-details { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin: 56px 0 0; padding: 32px 0 0; border-top: 1px solid #ddd; }
 .service-details dt { font-family: var(--font-serif), Georgia, serif; font-size: 27px; line-height: 1.2; }
 .service-details dd { margin: 14px 0 0; font-size: 13px; line-height: 1.85; color: #333; }
+
+/* ---- Service location (e.g. the Festival venue) ---- */
+.service-location { padding-block: 72px 0; border-top: 1px solid #ddd; }
+.service-location .service-eyebrow { color: var(--gold, #b99455); }
+.service-location h2 { text-align: center; text-wrap: balance; }
+.service-location-address { max-width: 640px; margin: 22px auto 0; text-align: center; font-size: 14px; line-height: 1.9; color: #333; }
+.service-location-actions { margin-top: 30px; text-align: center; }
+.service-location-btn { display: inline-flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--fh-green, #486a60); font-family: var(--font-poppins), sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .24em; text-transform: uppercase; color: var(--fh-green, #486a60); text-decoration: none; transition: color .3s, border-color .3s; }
+.service-location-btn span { font-size: 13px; line-height: 1; }
+.service-location-btn:hover { color: var(--fh-gold, #b89b5e); border-color: var(--fh-gold, #b89b5e); }
+.service-location .fh-map { padding-top: 56px; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) { .service-gallery figure:hover img { transform: scale(1.025); } }
 @media (max-width: 1024px) {
   .service-container { width: calc(100% - 64px); }
@@ -42,5 +53,7 @@
   .service-gallery-image, .service-gallery figure:first-child .service-gallery-image { aspect-ratio: 4 / 3; flex: none; }
   .service-details { grid-template-columns: 1fr; gap: 28px; margin-top: 36px; }
   .service-experience { padding-bottom: 36px; }
+  .service-location { padding-top: 44px; }
+  .service-location .fh-map { padding-top: 36px; }
 }
 @media (prefers-reduced-motion: reduce) { .service-gallery img { transition: none; } }

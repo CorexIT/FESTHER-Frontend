@@ -1,6 +1,8 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -13,6 +15,20 @@ const rise = (delay = 0) => ({
 });
 
 export default function AboutPreview() {
+  const pathname = usePathname();
+  const onAboutPage = pathname === "/about";
+
+  // On the About page the preview already sits above the About content, so the
+  // call to action scrolls to it instead of reloading the same route.
+  const handleCta = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!onAboutPage) return;
+    event.preventDefault();
+    const target = document.getElementById("about-values");
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <section className="about-preview">
       <div className="about-preview-row">
@@ -60,7 +76,11 @@ export default function AboutPreview() {
             </blockquote>
           </motion.div>
           <motion.div {...rise(0.44)}>
-            <Link className="about-preview-cta" href="/about">
+            <Link
+              className="about-preview-cta"
+              href={onAboutPage ? "#about-values" : "/about"}
+              onClick={handleCta}
+            >
               More About Us
             </Link>
           </motion.div>

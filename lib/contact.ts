@@ -36,21 +36,28 @@ export function isPlaceholder(value: string): boolean {
 }
 
 /**
- * Google Maps embed URL used by the Contact page map.
+ * Google Maps embed URL used by every map on the site (the Contact page and
+ * the Festival service page).
  *
- * IMPORTANT: this is a TEMPORARY sample location (Colombo, Sri Lanka) so the
- * map UI can be verified. Replace it with the real FESTHER location later.
+ * IMPORTANT: it must be an EMBED url. A normal Google Maps page/share url
+ * cannot be used in an iframe: it is served with `X-Frame-Options:
+ * SAMEORIGIN` and the browser blocks it ("refused to connect"). The two
+ * supported embed forms are:
+ *   - the `.../maps/embed?pb=...` url produced by Google's "Embed a map"
+ *     share option (used here), or
+ *   - `https://www.google.com/maps?q=<address>&hl=en&z=14&output=embed`.
  *
- * It must be an EMBED url (`&output=embed`). A normal Google Maps page/share
- * url cannot be used in an iframe: it is served with `X-Frame-Options:
- * SAMEORIGIN` and the browser blocks it ("refused to connect").
- *
- * To swap in the real location, either:
- *   - use the place name / address:  https://www.google.com/maps?q=<address>&hl=en&z=14&output=embed
- *   - or use a place CID:             https://www.google.com/maps?cid=<decimal-cid>&hl=en&z=14&output=embed
+ * This points at the verified FESTHER / StationHill location in Diyathalawa
+ * and is the single source of truth for the site maps.
  */
 export const GOOGLE_MAP_EMBED_URL =
-  "https://www.google.com/maps?q=Colombo%2C+Sri+Lanka&hl=en&z=12&output=embed";
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.735266157159!2d80.9606941!3d6.8020263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae471f6fcb3b617%3A0x1e497b12faee8f5!2sStationHill!5e0!3m2!1sen!2slk!4v1791103415738!5m2!1sen!2slk";
+
+/**
+ * Opens Google Maps directions to the verified FESTHER address in a new tab.
+ * A normal (non-embed) maps link — used for buttons, never as an iframe src.
+ */
+export const GOOGLE_MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(CONTACT_INFO.address)}`;
 
 /** Social links are rendered only when a real URL is configured. */
 export const SOCIAL_LINKS = [{ label: "WhatsApp", href: WHATSAPP_URL }];

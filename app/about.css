@@ -1,6 +1,19 @@
 /* ============ FESTHER ABOUT PAGE ============ */
 .about-page{background:#fff;color:var(--ink,#191711);font-family:var(--font-poppins),"Poppins",sans-serif}
 
+/* ---- About page hero image ----------------------------------------------------
+   The AboutPreview artwork (/abotpage.png) is a 609x440 landscape image with the
+   "FESTHER" wordmark across the top. The shared home-page rules use object-fit:cover
+   inside a tall/portrait box, which crops the sides and cuts the final "R", and the
+   overlapping text panel then covers the remaining right edge.
+   These overrides are scoped to the About page and only from tablet width up, so the
+   existing mobile layout (<=700px) is left exactly as it is. */
+@media(min-width:701px){
+  .about-page .about-preview-media{height:clamp(320px,30vw,520px)}
+  .about-page .about-preview-media img{object-fit:contain;object-position:center}
+  .about-page .about-preview-panel{margin-left:clamp(-90px,-4.5vw,-30px)}
+}
+
 /* ---- About page navbar: the Navbar component owns the hero/solid scroll state ---- */
 
 /* ---- Our Story ---- */
