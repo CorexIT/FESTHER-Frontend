@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ServiceDetail, ServiceImage } from "@/lib/data/services";
 import Navbar from "./Navbar";
 import ContactSection from "./ContactSection";
+import ServiceLocation from "./ServiceLocation";
 import "../services.css";
 
 function ServiceHero({ title, image }: { title: string; image: ServiceImage }) {
@@ -30,7 +31,13 @@ function ServiceGallery({ images }: { images: ServiceImage[] }) {
   );
 }
 
-export default function ServiceDetailPage({ service }: { service: ServiceDetail }) {
+export default function ServiceDetailPage({
+  service,
+  location = false,
+}: {
+  service: ServiceDetail;
+  location?: boolean;
+}) {
   return (
     <main className="service-page">
       <ServiceHero title={service.title} image={service.hero} />
@@ -58,6 +65,7 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
           ))}
         </dl>
       </section>
+      {location ? <ServiceLocation /> : null}
       <ContactSection />
       {/* The root layout renders the existing Footer immediately after main. */}
     </main>

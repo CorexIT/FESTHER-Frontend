@@ -6,5 +6,5 @@ const service = services["festival"];
 export const metadata: Metadata = { title: `${service.title} | FESTHR`, description: service.introduction[0] };
 
 export default function Page() {
-  return <ServiceDetailPage service={service} />;
+  return <ServiceDetailPage service={service} location />;
 }

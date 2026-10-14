@@ -37,7 +37,7 @@ export default function AboutPage() {
 
         <AboutPreview />
 
-        <section className="ab-values">
+        <section className="ab-values" id="about-values">
           <div className="ab-values-head">
             <motion.p {...rise()}>Guided by three principles</motion.p>
             <motion.h2 {...rise(0.08)}>What we value</motion.h2>
