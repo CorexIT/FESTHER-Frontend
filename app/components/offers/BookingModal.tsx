@@ -6,6 +6,7 @@ import Field from "./Field";
 import { useSubmit } from "./useSubmit";
 import { createBooking } from "@/services/bookings.service";
 import { validateBooking } from "@/lib/validators";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 import type { Accommodation, BookingRequest, Offer } from "@/lib/types";
 
 interface BookingModalProps {
@@ -39,6 +40,22 @@ export default function BookingModal({ accommodation, offer, onClose }: BookingM
     const errs = validateBooking(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
+    const message = [
+      `Room Name: ${accommodation.name}`,
+      `Full Name: ${form.guestName.trim()}`,
+      `Email: ${form.email.trim()}`,
+      `Phone: ${form.phone.trim()}`,
+      `Check-in: ${form.checkIn}`,
+      `Check-out: ${form.checkOut}`,
+      `Adults: ${form.adults}`,
+      `Children: ${form.children}`,
+      `Special Requests: ${form.specialRequests.trim()}`,
+    ].join("\n");
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
     const payload: BookingRequest = {
       accommodationId: accommodation.id,
       offerId: offer?.id,
