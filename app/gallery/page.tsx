@@ -1,51 +1,42 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
-
-const U = (id: string, w: number, h: number) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
+import { getGalleryItems, type GalleryItem } from "@/services/gallery.service";
 
 const categories = ["ALL", "ROOMS", "VIEWS", "DINING", "SPACES", "WELLNESS"] as const;
 type Category = (typeof categories)[number];
 
-interface GalleryItem {
-  id: string;
-  cat: Exclude<Category, "ALL">;
+interface GalleryCard {
+  key: string;
+  src: string;
   title: string;
-  w: number;
-  h: number;
+  description: string;
+  category: string;
 }
 
-const items: GalleryItem[] = [
-  { id: "photo-1590490360182-c33d57733427", cat: "ROOMS", title: "A room made for unhurried mornings", w: 900, h: 1200 },
-  { id: "photo-1571003123894-1f0594d2b5d9", cat: "ROOMS", title: "Quiet corners, warm light", w: 1400, h: 950 },
-  { id: "photo-1582719471384-894fbb16e074", cat: "ROOMS", title: "Thoughtful details of the stay", w: 900, h: 1500 },
-  { id: "photo-1618773928121-c32242e63f39", cat: "ROOMS", title: "Slow mornings in bed", w: 1100, h: 1100 },
-  { id: "photo-1546708973-b339540b5162", cat: "VIEWS", title: "Journeys through the island", w: 1700, h: 820 },
-  { id: "photo-1469474968028-56623f02e42e", cat: "VIEWS", title: "The island below", w: 1400, h: 950 },
-  { id: "photo-1507525428034-b723cf961d3e", cat: "VIEWS", title: "Warm sand, calm sea", w: 1600, h: 900 },
-  { id: "photo-1448375240586-882707db888b", cat: "VIEWS", title: "Green that goes on and on", w: 900, h: 1300 },
-  { id: "photo-1501785888041-af3ef285b470", cat: "VIEWS", title: "Still mornings, open skies", w: 1400, h: 950 },
-  { id: "photo-1414235077428-338989a2e8c0", cat: "DINING", title: "A table set just for you", w: 1400, h: 950 },
-  { id: "photo-1504674900247-0877df9cc836", cat: "DINING", title: "Flavours of the island", w: 1100, h: 1100 },
-  { id: "photo-1533089860892-a7c6f0a88666", cat: "DINING", title: "Breakfast, unhurried", w: 1400, h: 950 },
-  { id: "photo-1424847651672-bf20a4b0982b", cat: "DINING", title: "Gatherings around the table", w: 900, h: 1500 },
-  { id: "photo-1517248135467-4c7edcad34c4", cat: "DINING", title: "Evenings in good company", w: 900, h: 1200 },
-  { id: "photo-1600585154340-be6161a56a0c", cat: "SPACES", title: "Indoor and outdoor, together", w: 1600, h: 900 },
-  { id: "photo-1512917774080-9991f1c4c750", cat: "SPACES", title: "Architecture in the landscape", w: 1100, h: 1100 },
-  { id: "photo-1416879595882-3373a0480b5b", cat: "SPACES", title: "Gardens in bloom", w: 900, h: 1200 },
-  { id: "photo-1466781783364-36c955e42a7f", cat: "SPACES", title: "Paths into the green", w: 1400, h: 950 },
-  { id: "photo-1544161515-4ab6ce6db874", cat: "WELLNESS", title: "Time to slow the breath", w: 900, h: 1200 },
-  { id: "photo-1540555700478-4be289fbecef", cat: "WELLNESS", title: "Quiet, unhurried care", w: 900, h: 1500 },
-  { id: "photo-1519823551278-64ac92734fb1", cat: "WELLNESS", title: "Breathe, stretch, rest", w: 1400, h: 950 },
-  { id: "photo-1611892440504-42a792e24d32", cat: "WELLNESS", title: "The pool at golden hour", w: 1700, h: 820 },
-  { id: "photo-1520250497591-112f2f40a3f4", cat: "WELLNESS", title: "Cool water, warm days", w: 1400, h: 950 },
-];
+const hero = "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=2400&h=1250&q=80";
 
-const hero = U("photo-1611892440504-42a792e24d32", 2400, 1250);
+const toCards = (items: GalleryItem[]): GalleryCard[] =>
+  items.flatMap((item) => {
+    const category = (item.category ?? "").toUpperCase();
+    return (item.images ?? [])
+      .filter((src) => typeof src === "string" && src.length > 0)
+      .map((src, index) => ({
+        key: `${item.id}-${index}`,
+        src,
+        title: item.title ?? "",
+        description: item.description ?? "",
+        category,
+      }));
+  });
 
 export default function GalleryPage() {
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [error, setError] = useState("");
+  const [tick, setTick] = useState(0);
   const [active, setActive] = useState<Category>("ALL");
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -58,7 +49,37 @@ export default function GalleryPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const shown = active === "ALL" ? items : items.filter((i) => i.cat === active);
+  const retry = useCallback(() => {
+    setStatus("loading");
+    setError("");
+    setTick((t) => t + 1);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getGalleryItems();
+        if (cancelled) return;
+        setItems(data);
+        setError("");
+        setStatus("ready");
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "We could not load the gallery. Please try again.");
+        setStatus("error");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tick]);
+
+  const cards = useMemo(() => toCards(items), [items]);
+  const shown = useMemo(
+    () => (active === "ALL" ? cards : cards.filter((c) => c.category === active)),
+    [cards, active],
+  );
 
   const step = useCallback(
     (dir: number) => {
@@ -79,7 +100,7 @@ export default function GalleryPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [lightbox, step]);
 
-  const current = lightbox === null ? null : shown[lightbox];
+  const current = lightbox === null ? null : shown[lightbox] ?? null;
 
   return (
     <main className={`gallery-page${scrolled ? " gallery-page--scrolled" : ""}`}>
@@ -115,19 +136,41 @@ export default function GalleryPage() {
         ))}
       </nav>
 
-      <section className="fg-masonry" key={active} aria-label="Photo gallery">
-        {shown.map((item, i) => (
-          <button
-            key={item.id}
-            type="button"
-            className="fg-item"
-            onClick={() => setLightbox(i)}
-            aria-label={`Open image: ${item.title}`}
-          >
-            <img src={U(item.id, item.w, item.h)} alt={item.title} loading="lazy" />
+      {status === "loading" ? (
+        <p className="fg-state fg-loading" role="status">
+          Loading the gallery…
+        </p>
+      ) : status === "error" ? (
+        <div className="fg-state">
+          <p className="fg-error-banner">{error}</p>
+          <button type="button" className="fg-retry" onClick={retry}>
+            Try Again
           </button>
-        ))}
-      </section>
+        </div>
+      ) : cards.length === 0 ? (
+        <p className="fg-state fg-empty">The gallery is coming together — please check back soon.</p>
+      ) : shown.length === 0 ? (
+        <p className="fg-state fg-empty">No photos in this category yet.</p>
+      ) : (
+        <section className="fg-masonry" key={active} aria-label="Photo gallery">
+          {shown.map((item, i) => (
+            <button
+              key={item.key}
+              type="button"
+              className="fg-item"
+              onClick={() => setLightbox(i)}
+              aria-label={`Open image: ${item.title}`}
+            >
+              <img src={item.src} alt={item.title} loading="lazy" />
+              <span className="fg-item-cap">
+                <span className="fg-item-title">{item.title}</span>
+                <span className="fg-item-desc">{item.description}</span>
+                <span className="fg-item-cat">{item.category}</span>
+              </span>
+            </button>
+          ))}
+        </section>
+      )}
 
       {current ? (
         <div
@@ -153,7 +196,12 @@ export default function GalleryPage() {
             ←
           </button>
           <figure>
-            <img src={U(current.id, current.w * 2, current.h * 2)} alt={current.title} />
+            <img src={current.src} alt={current.title} />
+            <figcaption className="fg-lb-cap">
+              <span className="fg-lb-cat">{current.category}</span>
+              <span className="fg-lb-title">{current.title}</span>
+              {current.description ? <span className="fg-lb-desc">{current.description}</span> : null}
+            </figcaption>
           </figure>
           <button className="fg-lb-btn fg-lb-next" type="button" onClick={() => step(1)} aria-label="Next image">
             →
