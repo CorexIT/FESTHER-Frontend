@@ -1,0 +1,146 @@
+/* ============ FESTHER ACCOMMODATION PAGES ============ */
+.acc-page{background:#fff;color:var(--ink,#191711);font-family:var(--font-poppins),"Poppins",sans-serif}
+.acc-page .fg-crumbs a:hover{color:var(--gold,#b99455)}
+.acc-page .of-card-media a{display:block}
+
+.accp-card-meta{margin:10px 0 0;font-size:10px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:#9a9a9a;display:flex;gap:14px;flex-wrap:wrap}
+.accp-card-price{margin:14px 0 0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-size:21px;font-weight:400;letter-spacing:.03em;color:var(--gold,#b99455)}
+
+/* ---------- Listing ---------- */
+.accl-head{margin:44px auto 0}
+.accl-grid-bottom{margin-bottom:90px}
+
+/* ---------- Detail layout ---------- */
+.accd-body{width:min(92vw,1500px);margin:0 auto;padding:54px 0 96px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:clamp(32px,4vw,72px);align-items:start}
+.accd-main{min-width:0}
+.accd-kicker{margin:0 0 10px;font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold,#b99455)}
+.accd-title{margin:0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-weight:400;font-size:clamp(30px,3.2vw,44px);letter-spacing:.02em;line-height:1.15;text-transform:uppercase;color:#191711}
+.accd-title strong{font-weight:400;display:block;margin-top:10px;font-size:clamp(20px,1.9vw,28px);color:#666;letter-spacing:.12em}
+.accd-lead{margin:26px 0 0;font-size:15px;line-height:1.85;color:#444;white-space:pre-line}
+
+.accd-block{margin-top:52px}
+.accd-block-title{margin:0 0 24px;display:flex;align-items:center;gap:18px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#191711}
+.accd-block-title::before{content:"";width:30px;height:1px;background:var(--gold,#b99455)}
+
+/* ---------- Highlights ---------- */
+.accd-highlights{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 26px}
+.accd-highlights li{position:relative;padding-left:26px;font-size:14px;line-height:1.65;color:#555}
+.accd-highlights li::before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;border:1px solid var(--gold,#b99455);transform:rotate(45deg)}
+
+/* ---------- Details ---------- */
+.accd-details{border-top:1px solid #ececea}
+.accd-details-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:15px 2px;border-bottom:1px solid #ececea}
+.accd-details-row dt{font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#9a9a9a}
+.accd-details-row dd{margin:0;font-size:14px;color:#191711;text-align:right}
+
+/* ---------- Gallery ---------- */
+.accd-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.accd-gallery figure{margin:0;overflow:hidden;background:#f1efe9}
+.accd-gallery img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.accd-gallery figure:hover img{transform:scale(1.04)}
+.accd-gallery--lead{grid-column:1/-1;aspect-ratio:16/9}
+.accd-gallery--rest{aspect-ratio:4/3}
+
+/* ---------- Sidebar ---------- */
+.accd-side{position:sticky;top:104px}
+.accd-side-card{border:1px solid #ececea;background:#fff;padding:30px clamp(22px,2.4vw,34px) 32px}
+.accd-meta-rows{display:flex;flex-direction:column;gap:14px;padding-bottom:22px;border-bottom:1px solid #ececea}
+.accd-meta-row{display:flex;align-items:baseline;justify-content:space-between;gap:18px}
+.accd-meta-row span{font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#9a9a9a}
+.accd-meta-row strong{font-size:14px;font-weight:500;color:#191711;text-align:right}
+.accd-meta-row--price strong{font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-size:21px;font-weight:400;letter-spacing:.03em;color:var(--gold,#b99455)}
+.accd-amenities{list-style:none;margin:0;padding:22px 0;border-bottom:1px solid #ececea;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+.accd-amenities li{display:flex;align-items:center;gap:11px;font-size:12.5px;letter-spacing:.03em;color:#555;min-width:0}
+.accd-amenities svg{flex:none;width:19px;height:19px;color:var(--gold,#b99455)}
+.accd-side-cta{margin-top:24px;width:100%}
+.accd-side-note{margin:12px 0 0;text-align:center;font-size:11px;letter-spacing:.05em;color:#8a8a88}
+
+/* ---------- StationHill introduction & facilities ---------- */
+.sh-wrap{position:relative}
+.sh-intro{position:relative;width:min(94vw,1320px);margin:0 auto;padding:clamp(30px,3.4vw,52px) 0 clamp(14px,2vw,28px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:clamp(30px,5vw,74px);text-align:left}
+.sh-intro-inner{position:relative;z-index:1;min-width:0;max-width:640px}
+.sh-eyebrow{display:inline-flex;align-items:center;gap:14px;margin:0 0 16px;font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold,#b99455)}
+.sh-eyebrow::before,.sh-eyebrow::after{content:"";width:clamp(22px,4vw,40px);height:1px;background:currentColor;opacity:.45}
+.sh-title{margin:0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-weight:400;font-size:clamp(29px,3.4vw,46px);line-height:1.16;letter-spacing:.01em;color:#191711;text-wrap:balance}
+.sh-divider{display:flex;justify-content:center;margin:20px auto 0}
+.sh-divider svg{width:clamp(130px,16vw,180px);height:auto;color:var(--gold,#b99455);opacity:1}
+.sh-copy{max-width:730px;margin:22px auto 0;text-align:center;font-size:15px;line-height:1.9;color:#555}
+.sh-copy p{margin:0 0 18px}
+.sh-copy p:last-child{margin-bottom:0}
+
+/* Left-aligned intro column (two-column layout with the slideshow) */
+.sh-intro .sh-divider{justify-content:flex-start;margin-left:0}
+.sh-intro .sh-copy{max-width:none;margin-left:0;text-align:left}
+
+/* ---------- StationHill photographs slideshow ---------- */
+.sh-intro-media{position:relative;min-width:0}
+.sh-slideshow{position:relative;overflow:hidden;aspect-ratio:4/3;background:#efece5;border-radius:2px;box-shadow:0 34px 74px -42px rgba(25,23,17,.6);cursor:grab;touch-action:pan-y}
+.sh-slideshow:active{cursor:grabbing}
+.sh-slideshow:focus-visible{outline:2px solid var(--gold,#b99455);outline-offset:3px}
+.sh-slideshow::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(15,14,11,.52),rgba(15,14,11,0) 46%);pointer-events:none}
+.sh-slides{position:absolute;inset:0}
+.sh-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s ease}
+.sh-slide.is-active{opacity:1}
+.sh-slide-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:rgba(20,18,14,.34);color:#fff;cursor:pointer;transition:background .3s ease,border-color .3s ease}
+.sh-slide-nav:hover{background:rgba(185,148,85,.92);border-color:var(--gold,#b99455)}
+.sh-slide-nav svg{width:18px;height:18px}
+.sh-slide-nav--prev{left:14px}
+.sh-slide-nav--next{right:14px}
+.sh-slide-nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sh-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:9px}
+.sh-dot{width:8px;height:8px;padding:0;border:1px solid rgba(255,255,255,.85);border-radius:50%;background:transparent;cursor:pointer;transition:background .3s ease,transform .3s ease,border-color .3s ease}
+.sh-dot.is-active{background:var(--gold,#b99455);border-color:var(--gold,#b99455);transform:scale(1.15)}
+.sh-dot:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sh-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.sh-features{position:relative;width:min(92vw,1250px);margin:0 auto;padding:clamp(28px,3.2vw,44px) 0 0}
+.sh-features-head{max-width:720px;margin:0 auto;text-align:center}
+.sh-features-desc{margin:20px auto 0;max-width:600px;font-size:15px;line-height:1.8;color:#5c5c58}
+.sh-feature-grid{margin-top:clamp(34px,3.8vw,50px);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(18px,2vw,30px);align-items:start}
+.sh-feature{display:flex;flex-direction:column;align-items:center;min-width:0;text-align:center}
+.sh-feature-icon{display:inline-flex;align-items:center;justify-content:center;width:66px;height:66px;border:1px solid rgba(185,148,85,.4);border-radius:50%;background:transparent;color:var(--gold,#b99455);transition:border-color .4s ease,color .4s ease,background-color .4s ease,transform .4s ease}
+.sh-feature-icon svg{width:28px;height:28px}
+.sh-feature:hover .sh-feature-icon{border-color:var(--gold,#b99455);background:rgba(185,148,85,.09);transform:translateY(-3px)}
+.sh-feature-title{margin:20px 0 0;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:clamp(17px,1.45vw,20px);line-height:1.25;letter-spacing:.01em;color:#191711}
+.sh-feature-text{margin:10px 0 0;font-size:13px;line-height:1.72;color:#666}
+
+/* ---------- StationHill hero caption ---------- */
+.sh-hero-caption{position:absolute;left:50%;bottom:45px;transform:translateX(-50%);z-index:2;text-align:center;width:max-content;max-width:94vw}
+.sh-hero-caption h1{position:static;left:auto;bottom:auto;transform:none;margin:0;padding:0 20px;text-align:center;font-family:var(--font-serif),"Cormorant Garamond",Georgia,serif;font-weight:400;color:#fff;text-transform:none;white-space:nowrap;font-size:clamp(34px,3.6vw,52px);line-height:1.1;letter-spacing:.02em}
+.sh-hero-sub{margin:12px 0 0;font-family:var(--font-poppins),"Poppins",sans-serif;font-size:clamp(10px,.95vw,12px);font-weight:500;letter-spacing:.52em;text-indent:.52em;text-transform:uppercase;color:#e7d9b8;white-space:nowrap;text-align:center}
+
+/* ---------- Responsive ---------- */
+@media(max-width:1024px){
+  .accd-body{grid-template-columns:1fr;gap:44px}
+  .accd-side{position:static}
+  .accd-gallery--lead{aspect-ratio:16/10}
+  .sh-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:38px 28px}
+}
+@media(max-width:900px){
+  .sh-intro{grid-template-columns:1fr;gap:34px;text-align:left}
+  .sh-intro .sh-title{font-size:clamp(28px,6vw,38px)}
+}
+@media(max-width:700px){
+  .sh-hero-caption{bottom:34px;width:auto}
+  .sh-hero-caption h1{white-space:normal;text-wrap:balance;font-size:clamp(27px,6.8vw,38px);letter-spacing:.015em;line-height:1.15}
+  .sh-hero-sub{white-space:normal;font-size:clamp(9px,3vw,11px);letter-spacing:.4em;text-indent:.4em;margin-top:12px}
+  .accd-body{padding:40px 0 70px}
+  .accd-kicker{margin-bottom:8px}
+  .accd-title{font-size:29px}
+  .accd-lead{margin-top:20px;font-size:14px}
+  .accd-block{margin-top:40px}
+  .accd-highlights{grid-template-columns:1fr;gap:12px}
+  .accd-gallery{grid-template-columns:1fr;gap:14px}
+  .accd-gallery--lead,.accd-gallery--rest{aspect-ratio:4/3}
+  .accd-side-card{padding:26px 20px 28px}
+}
+@media(max-width:560px){
+  .sh-hero-caption{bottom:30px}
+  .sh-title{font-size:27px}
+  .sh-feature-grid{grid-template-columns:1fr;gap:34px}
+  .sh-feature-icon{width:60px;height:60px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sh-feature-icon,.sh-feature:hover .sh-feature-icon{transition:none;transform:none}
+  .sh-slide{transition:none}
+}
